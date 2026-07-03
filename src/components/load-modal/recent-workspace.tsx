@@ -23,8 +23,8 @@ export const getRecentFileIcon = (save_type: string): React.ReactElement => {
         [save_types.UNSAVED]: (
             <LegacyReportsIcon iconSize='xs' fill='var(--text-general)' className='icon-general-fill-g-path' />
         ),
-        [save_types.LOCAL]: <div style={{ height: '16px', width: '16px', background: 'gray' }}>Icon</div>,
-        [save_types.GOOGLE_DRIVE]: <div style={{ height: '16px', width: '16px', background: 'gray' }}>Icon</div>,
+        [save_types.LOCAL]: <div className='load-strategy__recent-icon-placeholder' />,
+        [save_types.GOOGLE_DRIVE]: <div className='load-strategy__recent-icon-placeholder' />,
     };
     return icons[save_type as string] as React.ReactElement;
 };

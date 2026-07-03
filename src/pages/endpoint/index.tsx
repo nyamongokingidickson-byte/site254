@@ -1,14 +1,22 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import { getAppId, getDefaultAppIdAndUrl, getSocketURL } from '@/components/shared';
+import { getDomainConfig, WS_SERVERS } from '@/components/shared';
 import { Button, Input, Text } from '@deriv-com/ui';
 import { LocalStorageConstants } from '@deriv-com/utils';
 import './endpoint.scss';
+
+// Helper functions for default values
+const getDefaultAppIdAndUrl = () => ({
+    app_id: getDomainConfig().appId,
+    server_url: WS_SERVERS.PRODUCTION,
+});
+
 const Endpoint = () => {
+    const defaultConfig = getDefaultAppIdAndUrl();
     const formik = useFormik({
         initialValues: {
-            appId: localStorage.getItem(LocalStorageConstants.configAppId) ?? getAppId(),
-            serverUrl: localStorage.getItem(LocalStorageConstants.configServerURL) ?? getSocketURL(),
+            appId: localStorage.getItem(LocalStorageConstants.configAppId) ?? defaultConfig.app_id,
+            serverUrl: localStorage.getItem(LocalStorageConstants.configServerURL) ?? defaultConfig.server_url,
         },
         onSubmit: values => {
             localStorage.setItem(LocalStorageConstants.configServerURL, values.serverUrl);

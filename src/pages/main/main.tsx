@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { generateOAuthURL, isDomainFeatureEnabled } from '@/components/shared';
+import ChunkLoader from '@/components/loader/chunk-loader';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
 import Dialog from '@/components/shared_ui/dialog';
 import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
@@ -31,12 +32,16 @@ import {
 import {
     LabelPairedChartLineCaptionRegularIcon,
     LabelPairedChartMixedCaptionRegularIcon,
+    LabelPairedChartTradingviewCaptionRegularIcon,
     LabelPairedChartTrendUpCaptionRegularIcon,
     LabelPairedCircleStarCaptionRegularIcon,
+    LabelPairedCopyCaptionRegularIcon,
     LabelPairedLightbulbCaptionRegularIcon,
     LabelPairedObjectsColumnCaptionRegularIcon,
     LabelPairedPuzzlePieceTwoCaptionBoldIcon,
     LabelPairedSearchCaptionRegularIcon,
+    LabelPairedHandshakeCaptionRegularIcon,
+    LabelPairedChartCandlestickCaptionRegularIcon,
 } from '@deriv/quill-icons/LabelPaired';
 import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
@@ -51,6 +56,16 @@ import RunStrategy from '../dashboard/run-strategy';
 import Analysistool from '../analysistool';
 import Scanner from '../scanner';
 import './main.scss';
+
+const Dtrader = React.lazy(() => import('../dtrader'));
+const Matches = React.lazy(() => import('../matches'));
+const Chart = React.lazy(() => import('../chart/chart-wrapper'));
+const TradingBots = React.lazy(() => import('../free-bots/trading-bots'));
+const Strategies = React.lazy(() => import('../free-bots/strategies'));
+const CopyTrading = React.lazy(() => import('../copy-trading'));
+const TradingView = React.lazy(() => import('../tradingview'));
+const SpeedBot = React.lazy(() => import('../speedbot'));
+const Chats = React.lazy(() => import('../chats'));
 
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
@@ -84,7 +99,7 @@ const AppWrapper = observer(() => {
         [key: string]: string;
     };
     const { clear } = summary_card;
-const { BOT_BUILDER, BOT_IDEAS, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER } = DBOT_TABS;
+    const { BOT_BUILDER, BOT_IDEAS, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER, DTRADER } = DBOT_TABS;
     const init_render = React.useRef(true);
     const hash = [
         'bot_ideas',
@@ -95,6 +110,15 @@ const { BOT_BUILDER, BOT_IDEAS, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER 
         'manual_trading',
         'scanner',
         'analysistool',
+        'dtrader',
+        'matches',
+        'chart',
+        'trading_bots',
+        'strategies',
+        'copy_trading',
+        'tradingview',
+        'speedbot',
+            'chats',
     ];
     const show_bot_ideas = isDomainFeatureEnabled('botIdeas');
     const show_auto_trades = isDomainFeatureEnabled('autoTrades');
@@ -170,7 +194,7 @@ const { BOT_BUILDER, BOT_IDEAS, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER 
 
     React.useEffect(() => {
         const el_dashboard = document.getElementById('id-dbot-dashboard');
-        const el_last_tab = document.getElementById('id-analysistool');
+        const el_last_tab = document.getElementById('id-dtrader');
 
         const observer_dashboard = new window.IntersectionObserver(
             ([entry]) => {
@@ -418,7 +442,9 @@ const { BOT_BUILDER, BOT_IDEAS, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER 
             if (el_id) {
                 const el_tab = document.getElementById(el_id);
                 setTimeout(() => {
-                    el_tab?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                    // Use nearest/start scrolling to avoid aggressive horizontal centering
+                    // which can cause left/right layout shifts when switching tabs.
+                    el_tab?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
                 }, 10);
             }
         },
@@ -574,19 +600,190 @@ const { BOT_BUILDER, BOT_IDEAS, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER 
                             >
                                 <Analysistool />
                             </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedChartTradingviewCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='DTrader' />
+                                    </>
+                                }
+                                id='id-dtrader'
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading DTrader...')} />}
+                                >
+                                    <Dtrader />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedHandshakeCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='Matches' />
+                                    </>
+                                }
+                                id='id-matches'
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading Matches...')} />}
+                                >
+                                    <Matches />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedChartCandlestickCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='Chart' />
+                                    </>
+                                }
+                                id='id-chart'
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading Chart...')} />}
+                                >
+                                    <Chart />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedCircleStarCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='Trading Bots' />
+                                    </>
+                                }
+                                id='id-trading-bots'
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading Trading Bots...')} />}
+                                >
+                                    <TradingBots />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedChartLineCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='Strategies' />
+                                    </>
+                                }
+                                id='id-strategies'
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading Strategies...')} />}
+                                >
+                                    <Strategies />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedCopyCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='Copy Trading' />
+                                    </>
+                                }
+                                id='id-copy-trading'
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading Copy Trading...')} />}
+                                >
+                                    <CopyTrading />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedChartTrendUpCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='TradingView' />
+                                    </>
+                                }
+                                id='id-tradingview'
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading TradingView...')} />}
+                                >
+                                    <TradingView />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedChartTrendUpCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='SpeedBot' />
+                                    </>
+                                }
+                                id='id-speedbot'
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading SpeedBot...')} />}
+                                >
+                                    <SpeedBot />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedHandshakeCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='Chats' />
+                                    </>
+                                }
+                                id='id-chats'
+                            >
+                                <Suspense fallback={<ChunkLoader message={localize('Please wait, loading Chats...')} />}>
+                                    <Chats />
+                                </Suspense>
+                            </div>
                         </Tabs>
                         {!isDesktop && right_tab_shadow && <span className='tabs-shadow tabs-shadow--right' />}{' '}
                     </div>
                 </div>
             </div>
             <DesktopWrapper>
-                <div className='main__run-strategy-wrapper'>
-                    <RunStrategy />
-                    <RunPanel />
-                </div>
+                {active_tab !== DTRADER && (
+                    <div className='main__run-strategy-wrapper'>
+                        <RunStrategy />
+                        <RunPanel />
+                    </div>
+                )}
                 <ChartModal />
             </DesktopWrapper>
-            <MobileWrapper>{!is_open && <RunPanel />}</MobileWrapper>
+            <MobileWrapper>{!is_open && active_tab !== DTRADER && <RunPanel />}</MobileWrapper>
             <Dialog
                 cancel_button_text={
                     navigation_stop_in_progress ? undefined : localize('Stay')

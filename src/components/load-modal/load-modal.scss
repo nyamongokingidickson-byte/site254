@@ -167,4 +167,42 @@
         height: unset;
         margin: 0;
     }
+
+    .load-strategy__blockly-container {
+        height: 100%;
+    }
+
+    .load-strategy__file-input {
+        display: none;
+    }
+
+    .load-strategy__local-icon-placeholder {
+        border-radius: 1rem;
+        background-color: var(--general-section-2);
+        display: inline-block;
+    }
+
+    .load-strategy__local-icon-placeholder--mobile {
+        height: 96px;
+        width: 96px;
+    }
+
+    .load-strategy__local-icon-placeholder--desktop {
+        height: 128px;
+        width: 128px;
+    }
+
+    .load-strategy__recent-icon-placeholder,
+    .load-strategy__recent__empty-icon-placeholder {
+        border-radius: 0.4rem;
+        background-color: var(--general-section-2);
+        display: inline-block;
+        height: 16px;
+        width: 16px;
+    }
+
+    .load-strategy__recent__empty-icon-placeholder {
+        height: 128px;
+        width: 128px;
+    }
 }

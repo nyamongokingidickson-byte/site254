@@ -100,7 +100,8 @@ export default class LoadModalStore {
 
     recent_workspace: window.Blockly.WorkspaceSvg | null = null;
     local_workspace: window.Blockly.WorkspaceSvg | null = null;
-    drop_zone: unknown;
+    drop_zone: HTMLElement | null = null;
+    drop_zone_handler = (event: DragEvent) => this.handleFileChange(event, false);
 
     active_index = 0;
     is_load_modal_open = false;
@@ -208,7 +209,16 @@ export default class LoadModalStore {
 
     onLoadModalClose = (): void => {
         if (this.local_workspace) {
+            this.local_workspace.dispose();
             this.local_workspace = null;
+        }
+        if (this.recent_workspace) {
+            this.recent_workspace.dispose();
+            this.recent_workspace = null;
+        }
+        if (this.drop_zone) {
+            this.drop_zone.removeEventListener('drop', this.drop_zone_handler);
+            this.drop_zone = null;
         }
         this.setActiveTabIndex(0); // Reset to first tab.
         this.setLoadedLocalFile(null);
@@ -374,10 +384,10 @@ export default class LoadModalStore {
 
         if (this.tab_name === tabs_title.TAB_LOCAL) {
             if (!this.drop_zone) {
-                this.drop_zone = document.querySelector('load-strategy__local-dropzone-area');
+                this.drop_zone = document.querySelector('.load-strategy__local-dropzone-area');
 
                 if (this.drop_zone) {
-                    this.drop_zone.addEventListener('drop', event => this.handleFileChange(event, false));
+                    this.drop_zone.addEventListener('drop', this.drop_zone_handler);
                 }
             }
         }
@@ -393,7 +403,7 @@ export default class LoadModalStore {
 
         // Forget about drop zone when not on Local tab.
         if (this.tab_name !== tabs_title.TAB_LOCAL && this.drop_zone) {
-            this.drop_zone.removeEventListener('drop', event => this.handleFileChange(event, false));
+            this.drop_zone.removeEventListener('drop', this.drop_zone_handler);
         }
         this.setOpenButtonDisabled(false);
     };

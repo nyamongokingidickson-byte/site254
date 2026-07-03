@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import React from 'react';
+import type CopyTradingManager from '@/pages/copy-trading/copy-trading-manager';
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router-dom';
 import ChunkLoader from '@/components/loader/chunk-loader';
 import LocalStorageSyncWrapper from '@/components/localStorage-sync-wrapper';
@@ -13,6 +14,10 @@ import { initializeI18n, localize, TranslationProvider } from '@deriv-com/transl
 import CoreStoreProvider from './CoreStoreProvider';
 import ErrorBoundary from './ErrorBoundary';
 import './app-root.scss';
+
+let globalCopyTradingManager: CopyTradingManager | null = null;
+
+export const getGlobalCopyTradingManager = () => globalCopyTradingManager;
 
 const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));

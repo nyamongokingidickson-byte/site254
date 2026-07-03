@@ -47,7 +47,7 @@ const LocalComponent = observer(() => {
                         <Localize i18n_default_text='Preview' />
                     </div>
                     <div className='load-strategy__preview-workspace'>
-                        <div id='load-strategy__blockly-container' style={{ height: '100%' }}>
+                        <div id='load-strategy__blockly-container' className='load-strategy__blockly-container'>
                             <div className='load-strategy__local-preview-close'>
                                 <LegacyClose1pxIcon
                                     onClick={() => {
@@ -78,7 +78,9 @@ const LocalComponent = observer(() => {
                     type='file'
                     ref={file_input_ref}
                     accept='application/xml, text/xml'
-                    style={{ display: 'none' }}
+                    className='load-strategy__file-input'
+                    title={localize('Select an XML file from your device')}
+                    aria-label={localize('Select an XML file from your device')}
                     onChange={e => {
                         const is_supported = handleFileChange(e, false);
                         !is_supported &&
@@ -106,10 +108,10 @@ const LocalComponent = observer(() => {
                     }}
                 >
                     {!isDesktop ? (
-                        <div style={{ height: '96px', width: '96px', background: 'gray' }}>Icon</div>
+                        <div className='load-strategy__local-icon-placeholder load-strategy__local-icon-placeholder--mobile' />
                     ) : (
                         <React.Fragment>
-                            <div style={{ height: '128px', width: '128px', background: 'gray' }}>Icon</div>
+                            <div className='load-strategy__local-icon-placeholder load-strategy__local-icon-placeholder--desktop' />
                             <div className='load-strategy__local-title'>
                                 <Localize i18n_default_text='Drag your XML file here' />
                             </div>

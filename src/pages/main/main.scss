@@ -95,43 +95,45 @@
             }
 
             &__active {
-                background: var(--rm-shell-nav-active);
-                color: var(--rm-shell-text) !important;
+                background: #3b82f6 !important; // Solid blue – matches dbot-main
+                color: #ffffff !important;
                 border: 0;
-                border-radius: 0;
+                border-radius: 4px !important;
+                margin: 0 0.25rem !important;
+                padding: 0.5rem 1rem !important;
                 box-shadow: none;
 
                 svg,
                 svg path,
                 svg g path {
-                    fill: var(--rm-shell-gold) !important;
+                    fill: #ffffff !important;
                 }
             }
 
             &__item {
-                color: var(--rm-shell-text);
+                color: #ffffff !important;
                 display: flex;
                 align-items: center;
                 gap: 0.6rem;
-                padding: 0 1.6rem;
+                padding: 0.5rem 1.2rem;
                 height: 40px;
                 line-height: 40px;
-                border-radius: 0;
-                margin: 0;
+                border-radius: 8px !important;
+                margin: 0.25rem 0.25rem;
 
                 &:not(.dc-tabs__active):hover {
-                    background: var(--rm-shell-nav-hover);
-                    color: var(--rm-shell-text);
+                    background: rgba(255, 255, 255, 0.1);
+                    color: #ffffff !important;
 
                     svg,
                     svg path,
                     svg g path {
-                        fill: var(--rm-shell-gold) !important;
+                        fill: #60a5fa !important;
                     }
                 }
 
                 &:not(.dc-tabs__active) {
-                    color: var(--rm-shell-text);
+                    color: #ffffff !important;
                 }
 
                 svg {
@@ -139,14 +141,14 @@
 
                     path,
                     g path {
-                        fill: var(--rm-shell-gold) !important;
+                        fill: #60a5fa !important;
                     }
                 }
             }
 
             &__list {
-                background: var(--rm-shell-nav);
-                justify-content: start;
+                background: #1e3a8a !important; // Dark navy – matches dbot-main
+                justify-content: flex-start;
                 padding: 0;
                 height: 48px;
                 align-items: center;
@@ -167,7 +169,7 @@
                 &--header {
                     &--main {
                         &__tabs {
-                            background: var(--rm-shell-nav);
+                            background: #1e3a8a !important;
 
                             @include mobile-or-tablet-screen {
                                 width: 100%;

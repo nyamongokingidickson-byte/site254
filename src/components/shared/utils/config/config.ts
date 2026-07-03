@@ -178,7 +178,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
     ...createHostedDomainEntries({
         primaryDomain: 'riskmanagers.site',
         aliases: ['www.riskmanagers.site'],
-        clientId: '33cCr2bWsByPgLlormNFw',
+        clientId: '33F8QpP6JKuOzvEecwHPJ',
         appId: '71937',
         redirectUri: 'https://riskmanagers.site/',
         includeLegacyAppIdInOAuth: true,
@@ -194,7 +194,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
     ...createHostedDomainEntries({
         primaryDomain: 'termicafx.site',
         aliases: ['www.termicafx.site'],
-        clientId: '33h4ThjleZotVMiKQ1gE7',
+        clientId: '33F8QpP6JKuOzvEecwHPJ',
         appId: '124217',
         redirectUri: 'https://termicafx.site/',
         botsFolder: 'optimumtraders.site',
@@ -208,7 +208,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
     ...createHostedDomainEntries({
         primaryDomain: 'mrzetuzetu.site',
         aliases: ['www.mrzetuzetu.site'],
-        clientId: '33gJ6p5dXzASAIobgv9az',
+        clientId: '33F8QpP6JKuOzvEecwHPJ',
         appId: '80364',
         redirectUri: 'https://mrzetuzetu.site/',
         botsFolder: 'mrzetuzetu.site',
@@ -224,7 +224,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
     ...createHostedDomainEntries({
         primaryDomain: 'masterhunter.site',
         aliases: ['www.masterhunter.site'],
-        clientId: '33g5WCS5YOFHD3aWLZZjj',
+        clientId: '33F8QpP6JKuOzvEecwHPJ',
         appId: '96223',
         redirectUri: 'https://masterhunter.site/',
         botsFolder: 'masterhunter.site',
@@ -240,7 +240,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
     ...createHostedDomainEntries({
         primaryDomain: 'tradinghubs.site',
         aliases: ['www.tradinghubs.site'],
-        clientId: '33hi7ev9NiDjWY640JuSw',
+        clientId: '33F8QpP6JKuOzvEecwHPJ',
         appId: '122208',
         redirectUri: 'https://tradinghubs.site/',
         botsFolder: 'tradinghubs.site',
@@ -256,7 +256,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
     ...createHostedDomainEntries({
         primaryDomain: 'mafiahub.site',
         aliases: ['www.mafiahub.site'],
-        clientId: '331bCUS8izRudblAnSACt',
+        clientId: '33F8QpP6JKuOzvEecwHPJ',
         appId: '120589',
         redirectUri: 'https://mafiahub.site/',
         botsFolder: 'mafiahub.site',
@@ -272,7 +272,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
     ...createHostedDomainEntries({
         primaryDomain: 'enifihub.vercel.app',
         aliases: ['www.enifihub.vercel.app'],
-        clientId: '33E4RZUuQNAdTIRfsPZRE',
+        clientId: '33F8QpP6JKuOzvEecwHPJ',
         appId: '113555',
         redirectUri: 'https://enifihub.vercel.app/',
         botsFolder: 'enifihub.vercel.app',
@@ -395,6 +395,16 @@ export const buildBestBotsFileUrl = (bots_folder: string, file_name: string) => 
 };
 
 export const getBestBotsFileUrl = (file_name: string) => buildBestBotsFileUrl(getBestBotsFolder(), file_name);
+
+export const getAppId = (): string => {
+    try {
+        const appId = getDomainConfig().appId || process.env.APP_ID || '117164';
+        window.localStorage.setItem('APP_ID', appId);
+        return appId;
+    } catch (error) {
+        return process.env.APP_ID || '117164';
+    }
+};
 
 // =============================================================================
 // Constants - Server Configuration (from brand.config.json)

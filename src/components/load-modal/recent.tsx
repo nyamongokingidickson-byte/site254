@@ -24,7 +24,7 @@ const RecentComponent = observer(() => {
                             <Localize i18n_default_text='Preview' />
                         </div>
                         <div className='load-strategy__preview-workspace'>
-                            <div id='load-strategy__blockly-container' style={{ height: '100%' }}>
+                            <div id='load-strategy__blockly-container' className='load-strategy__blockly-container'>
                                 <WorkspaceControl />
                             </div>
                         </div>
@@ -37,7 +37,7 @@ const RecentComponent = observer(() => {
         <div className='load-strategy__container'>
             <div className='load-strategy__recent__empty' data-testid='dt-load-strategy__recent__empty'>
                 <div className='load-strategy__recent__empty-icon'>
-                    <div style={{ height: '128px', width: '128px', background: 'gray' }}>Icon</div>
+                    <div className='load-strategy__recent__empty-icon-placeholder' />
                 </div>
                 <div className='load-strategy__recent__empty-title'>
                     <Localize i18n_default_text='You do not have any recent bots' />
