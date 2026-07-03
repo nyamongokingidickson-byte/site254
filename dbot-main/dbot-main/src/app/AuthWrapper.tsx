@@ -89,7 +89,7 @@ const restoreLoginFromServerSession = async () => {
             console.warn('Failed to store deriv accounts via service', e);
         }
         localStorage.setItem('authToken', sessionToken);
-        
+
         // CRITICAL: Set active_loginid BEFORE api_base.init() so it can use it
         if (preferredLoginId) {
             localStorage.setItem('active_loginid', preferredLoginId);
@@ -124,14 +124,15 @@ const restoreLoginFromServerSession = async () => {
 
         const authorize = api_base.account_info as any;
         const discoveredAccounts = authorize?.account_list || [];
-        
+
         // If no accounts discovered via api_base, that's okay - store what we have
         // The accounts may be populated later when the API connection is ready
-        const accountsToStore = discoveredAccounts.length > 0 
-            ? discoveredAccounts 
-            : (Array.isArray(sessionData.accounts) && sessionData.accounts.length > 0 
-                ? sessionData.accounts 
-                : []);
+        const accountsToStore =
+            discoveredAccounts.length > 0
+                ? discoveredAccounts
+                : Array.isArray(sessionData.accounts) && sessionData.accounts.length > 0
+                  ? sessionData.accounts
+                  : [];
 
         let selectedLoginId = localStorage.getItem('active_loginid') || '';
         const authorizedAccountsList: Record<string, string> = {};
@@ -171,7 +172,7 @@ const restoreLoginFromServerSession = async () => {
 
         localStorage.setItem('accountsList', JSON.stringify(authorizedAccountsList));
         localStorage.setItem('clientAccounts', JSON.stringify(authorizedClientAccounts));
-        
+
         // Ensure active_loginid is set from discovered accounts
         if (selectedLoginId) {
             localStorage.setItem('active_loginid', selectedLoginId);
@@ -208,16 +209,31 @@ const setLocalStorageToken = async (
             if (!defaultActiveAccount) return;
 
             const accountsList: Record<string, string> = {};
-            const clientAccounts: Record<string, { loginid: string; token: string; currency: string; account_type?: string; balance?: string }> = {};
+            const clientAccounts: Record<
+                string,
+                { loginid: string; token: string; currency: string; account_type?: string; balance?: string }
+            > = {};
 
-            loginInfo.forEach((account: { loginid: string; token: string; currency: string; account_type?: string; balance?: string }) => {
-                accountsList[account.loginid] = account.token;
-                clientAccounts[account.loginid] = {
-                    ...account,
-                    account_type: account.account_type || (account.loginid?.startsWith('VRTC') || account.loginid?.startsWith('VR') ? 'demo' : 'real'),
-                    balance: account.balance ?? '0',
-                };
-            });
+            loginInfo.forEach(
+                (account: {
+                    loginid: string;
+                    token: string;
+                    currency: string;
+                    account_type?: string;
+                    balance?: string;
+                }) => {
+                    accountsList[account.loginid] = account.token;
+                    clientAccounts[account.loginid] = {
+                        ...account,
+                        account_type:
+                            account.account_type ||
+                            (account.loginid?.startsWith('VRTC') || account.loginid?.startsWith('VR')
+                                ? 'demo'
+                                : 'real'),
+                        balance: account.balance ?? '0',
+                    };
+                }
+            );
 
             // CRITICAL: Save all account data first to ensure persistence
             localStorage.setItem('accountsList', JSON.stringify(accountsList));
@@ -248,7 +264,8 @@ const setLocalStorageToken = async (
             localStorage.setItem('active_loginid', selectedLoginId);
             localStorage.setItem(
                 'account_type',
-                selectedLoginInfo.account_type || (selectedLoginId.startsWith('VRTC') || selectedLoginId.startsWith('VR') ? 'demo' : 'real')
+                selectedLoginInfo.account_type ||
+                    (selectedLoginId.startsWith('VRTC') || selectedLoginId.startsWith('VR') ? 'demo' : 'real')
             );
 
             // Store auth_info centrally for other services

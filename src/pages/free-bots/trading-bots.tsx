@@ -3,14 +3,15 @@ import FreeBots from './free-bots';
 import HybridBots from '../hybrid-bots';
 import RiskCalculator from './risk-calculator';
 import Strategies from './strategies';
+import BestBots from '../best-bots';
 import { Localize } from '@deriv-com/translations';
 import { LabelPairedPuzzlePieceTwoCaptionBoldIcon } from '@deriv/quill-icons/LabelPaired';
 import './trading-bots.scss';
 
-type TradingBotSubTab = 'free-bots' | 'speedbots' | 'calculator' | 'strategies';
+type TradingBotSubTab = 'best-bots' | 'free-bots' | 'speedbots' | 'calculator' | 'strategies';
 
 const TradingBots: React.FC = () => {
-    const [active_tool, setActiveTool] = useState<TradingBotSubTab>('free-bots');
+    const [active_tool, setActiveTool] = useState<TradingBotSubTab>('best-bots');
 
     const handleCardClick = (tool: TradingBotSubTab) => {
         setActiveTool(tool);
@@ -20,6 +21,8 @@ const TradingBots: React.FC = () => {
         if (!active_tool) return null;
 
         switch (active_tool) {
+            case 'best-bots':
+                return <BestBots />;
             case 'free-bots':
                 return <FreeBots />;
             case 'speedbots':
@@ -36,6 +39,21 @@ const TradingBots: React.FC = () => {
     return (
         <div className='trading-bots'>
             <div className='trading-bots__cards-container'>
+                <div
+                    className={`trading-bots__card trading-bots__card--light ${active_tool === 'best-bots' ? 'trading-bots__card--active' : ''}`}
+                    onClick={() => handleCardClick('best-bots')}
+                >
+                    <div className='trading-bots__card-content'>
+                        <LabelPairedPuzzlePieceTwoCaptionBoldIcon
+                            height='16px'
+                            width='16px'
+                            fill={active_tool === 'best-bots' ? '#3b82f6' : '#1e3a8a'}
+                        />
+                        <span className='trading-bots__card-label'>
+                            <Localize i18n_default_text='Best Bots' />
+                        </span>
+                    </div>
+                </div>
                 <div
                     className={`trading-bots__card trading-bots__card--light ${active_tool === 'free-bots' ? 'trading-bots__card--active' : ''}`}
                     onClick={() => handleCardClick('free-bots')}

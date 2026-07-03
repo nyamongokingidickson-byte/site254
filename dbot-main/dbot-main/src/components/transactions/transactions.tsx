@@ -181,9 +181,7 @@ const Transactions = observer(({ is_drawer_open }: TTransactions) => {
                         />
                     ) : (
                         <>
-                            {contract_stage >= contract_stages.STARTING ? (
-                                null
-                            ) : (
+                            {contract_stage >= contract_stages.STARTING ? null : (
                                 <ThemedScrollbars>
                                     <div className='transactions-empty-box'>
                                         <div className='transactions-empty'>

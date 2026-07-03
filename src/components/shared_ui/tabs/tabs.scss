@@ -3,6 +3,8 @@
 .dc-tabs {
     position: relative;
     display: grid;
+    width: 100%;
+    overflow: hidden;
 
     &--top {
         grid-template-rows: auto 1fr;
@@ -19,7 +21,7 @@
         position: relative;
 
         @include mobile-or-tablet-screen {
-            justify-content: center;
+            // Mobile layout handled per-context (main__tabs, run-panel, etc.)
         }
 
         &--overflow-hidden {
@@ -46,6 +48,8 @@
             margin: auto;
 
             .dc-tabs__item {
+            flex: 1 1 0;
+            max-width: none;
                 padding: 0 2.2rem;
             }
         }
@@ -65,9 +69,7 @@
             }
         }
 
-        &:not(&--header-fit-content) {
-            justify-content: center;
-        }
+
 
         &--full-width {
             width: 100vw;
@@ -245,7 +247,7 @@
     &__active {
         font-weight: bold !important;
         color: #ffffff !important;
-        background-color: #3b82f6 !important;
+        background-color: #00b8ad !important;
         font-family:
             Arial,
             Helvetica,

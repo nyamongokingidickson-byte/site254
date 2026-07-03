@@ -216,23 +216,27 @@ export default class TicksService {
             const subscription = api_base.api.onMessage().subscribe(({ data }) => {
                 if (data.msg_type === 'tick') {
                     const { tick } = data;
-                    const { symbol, id } = tick;
-                    if (this.ticks.has(symbol)) {
-                        this.subscriptions = this.subscriptions.setIn(['tick', symbol], id);
-                        this.updateTicksAndCallListeners(symbol, updateTicks(this.ticks.get(symbol), parseTick(tick)));
+                    if (tick) {
+                        const { symbol, id } = tick;
+                        if (this.ticks.has(symbol)) {
+                            this.subscriptions = this.subscriptions.setIn(['tick', symbol], id);
+                            this.updateTicksAndCallListeners(symbol, updateTicks(this.ticks.get(symbol), parseTick(tick)));
+                        }
                     }
                 }
 
                 if (data.msg_type === 'ohlc') {
                     const { ohlc } = data;
-                    const { symbol, granularity, id } = ohlc;
-                    if (this.candles.hasIn([symbol, Number(granularity)])) {
-                        this.subscriptions = this.subscriptions.setIn(['ohlc', symbol, Number(granularity)], id);
-                        const address = [symbol, Number(granularity)];
-                        this.updateCandlesAndCallListeners(
-                            address,
-                            updateCandles(this.candles.getIn(address), parseOhlc(ohlc))
-                        );
+                    if (ohlc) {
+                        const { symbol, granularity, id } = ohlc;
+                        if (this.candles.hasIn([symbol, Number(granularity)])) {
+                            this.subscriptions = this.subscriptions.setIn(['ohlc', symbol, Number(granularity)], id);
+                            const address = [symbol, Number(granularity)];
+                            this.updateCandlesAndCallListeners(
+                                address,
+                                updateCandles(this.candles.getIn(address), parseOhlc(ohlc))
+                            );
+                        }
                     }
                 }
             });

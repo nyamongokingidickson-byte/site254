@@ -46,9 +46,7 @@ const useLiveChat = (client_information: TLiveChatClientInformation) => {
                 if (data.state.visibility === 'minimized') {
                     window.LiveChatWidget?.call('hide');
                 }
-                const utm_data = JSON.parse(
-                    Cookies.get('utm_data') || '{}'
-                );
+                const utm_data = JSON.parse(Cookies.get('utm_data') || '{}');
                 const { utm_source, utm_medium, utm_campaign } = utm_data;
 
                 const session_variables = {

@@ -54,9 +54,7 @@ export default async function handler(req, res) {
             setCookies.push(
                 `deriv_access_token=${encodeURIComponent(tokenData.access_token)}; ${cookieOpts.join('; ')}; Max-Age=${maxAge}`
             );
-            setCookies.push(
-                `deriv_token_expires=${Date.now() + maxAge * 1000}; ${cookieOpts.join('; ')}`
-            );
+            setCookies.push(`deriv_token_expires=${Date.now() + maxAge * 1000}; ${cookieOpts.join('; ')}`);
         }
 
         if (tokenData.refresh_token) {
@@ -70,9 +68,7 @@ export default async function handler(req, res) {
             setCookies.push(`deriv_app_id=${encodeURIComponent(appId)}; ${cookieOpts.join('; ')}`);
         }
 
-        setCookies.push(
-            `logged_state=true; Path=/; SameSite=Lax${isProd ? '; Secure' : ''}`
-        );
+        setCookies.push(`logged_state=true; Path=/; SameSite=Lax${isProd ? '; Secure' : ''}`);
 
         if (setCookies.length) {
             res.setHeader('Set-Cookie', setCookies);

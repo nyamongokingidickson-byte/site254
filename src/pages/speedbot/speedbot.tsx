@@ -2,11 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import Text from '@/components/shared_ui/text';
 import { localize } from '@deriv-com/translations';
-import {
-    generateDerivApiInstance,
-    getLoginId,
-    getToken,
-} from '@/external/bot-skeleton/services/api/appId';
+import { generateDerivApiInstance, getLoginId, getToken } from '@/external/bot-skeleton/services/api/appId';
 import { contract_stages } from '@/constants/contract-stage';
 import { useStore } from '@/hooks/useStore';
 import { isSpecialCRAccount } from '@/utils/special-accounts-config';

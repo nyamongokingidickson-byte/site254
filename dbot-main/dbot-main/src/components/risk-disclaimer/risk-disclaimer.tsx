@@ -131,13 +131,17 @@ const RiskDisclaimer = () => {
                         <div className='risk-disclaimer-modal__point'>
                             <span>•</span>
                             <Text size='xs' color='general'>
-                                {localize('If your trade involves currency conversion, exchange rates will affect your profit and loss.')}
+                                {localize(
+                                    'If your trade involves currency conversion, exchange rates will affect your profit and loss.'
+                                )}
                             </Text>
                         </div>
                         <div className='risk-disclaimer-modal__point'>
                             <span>•</span>
                             <Text size='xs' color='general'>
-                                {localize('You should never trade with borrowed money or with funds you cannot afford to lose.')}
+                                {localize(
+                                    'You should never trade with borrowed money or with funds you cannot afford to lose.'
+                                )}
                             </Text>
                         </div>
                     </div>

@@ -87,7 +87,7 @@ export const getConfiguredClientId = () =>
     process.env.VITE_OAUTH_CLIENT_ID ||
     localStorage.getItem('configured_client_id') ||
     brandConfig.oauth?.client_id ||
-    ''; 
+    '';
 
 const getOAuthBaseUrl = () =>
     process.env.AUTH_BASE_URL ||

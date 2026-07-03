@@ -1,4 +1,12 @@
-import { FormEvent as ReactFormEvent, MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    FormEvent as ReactFormEvent,
+    MouseEvent as ReactMouseEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { CurrencyIcon } from '@/components/currency/currency-icon';
@@ -8,7 +16,12 @@ import { api_base } from '@/external/bot-skeleton/services/api/api-base';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import { isDemoAccount } from '@/utils/account-helpers';
-import { DISPLAY_CURRENCIES, formatDisplayBalanceValue, resolveDisplayCurrency, TDisplayCurrency } from '@/utils/display-currency';
+import {
+    DISPLAY_CURRENCIES,
+    formatDisplayBalanceValue,
+    resolveDisplayCurrency,
+    TDisplayCurrency,
+} from '@/utils/display-currency';
 import { Localize } from '@deriv-com/translations';
 import { TAccountSwitcher } from './common/types';
 import AccountInfoWrapper from './account-info-wrapper';
@@ -79,14 +92,11 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
         setIsOpen(prev => !prev);
     }, [is_bot_running, isSingleAccount]);
 
-    const toggleCurrencyMenu = useCallback(
-        (event: ReactMouseEvent<HTMLButtonElement>) => {
-            event.stopPropagation();
-            setIsOpen(false);
-            setIsCurrencyMenuOpen(prev => !prev);
-        },
-        []
-    );
+    const toggleCurrencyMenu = useCallback((event: ReactMouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+        setIsOpen(false);
+        setIsCurrencyMenuOpen(prev => !prev);
+    }, []);
 
     const handleDisplayCurrencySelect = useCallback(
         (currency_code: TDisplayCurrency) => {
@@ -216,7 +226,12 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
                     >
                         {selectedDisplayCurrency}
                         <svg width='10' height='10' viewBox='0 0 10 10' fill='none' aria-hidden='true'>
-                            <path d='M2 3.5L5 6.5L8 3.5' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' />
+                            <path
+                                d='M2 3.5L5 6.5L8 3.5'
+                                stroke='currentColor'
+                                strokeWidth='1.5'
+                                strokeLinecap='round'
+                            />
                         </svg>
                     </button>
                     {isCurrencyMenuOpen && (
@@ -267,11 +282,7 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
                                         'acc-info__balance--no-currency': !currency && !isVirtual,
                                     })}
                                 >
-                                    {!currency ? (
-                                        <Localize i18n_default_text='No currency assigned' />
-                                    ) : (
-                                        headerBalance
-                                    )}
+                                    {!currency ? <Localize i18n_default_text='No currency assigned' /> : headerBalance}
                                 </p>
                             </div>
                         )}

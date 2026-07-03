@@ -67,9 +67,7 @@ const ensureAuthorizedForTrading = async () => {
 
 const getMoneyDecimals = (currency?: string) => {
     const normalizedCurrency = (currency || '').toUpperCase();
-    return normalizedCurrency === 'BTC' || normalizedCurrency === 'ETH' || normalizedCurrency.includes('USDT')
-        ? 8
-        : 2;
+    return normalizedCurrency === 'BTC' || normalizedCurrency === 'ETH' || normalizedCurrency.includes('USDT') ? 8 : 2;
 };
 
 const formatAmount = (amount: number, currency: string) => `${amount.toFixed(getMoneyDecimals(currency))} ${currency}`;
@@ -269,7 +267,8 @@ const getProfitTableContractSnapshot = (transaction: Record<string, any>, fallba
         transaction.sell_price !== undefined && transaction.sell_price !== null
             ? Number(transaction.sell_price)
             : undefined;
-    const payout = transaction.payout !== undefined && transaction.payout !== null ? Number(transaction.payout) : undefined;
+    const payout =
+        transaction.payout !== undefined && transaction.payout !== null ? Number(transaction.payout) : undefined;
     const profit =
         transaction.profit !== undefined && transaction.profit !== null
             ? Number(transaction.profit)
@@ -404,7 +403,10 @@ export const streamContractUntilSettled = ({
                     finish(snapshot);
                 }
             } catch (profitTableError) {
-                console.warn(`[${source}] Profit table recovery failed for ${contractId} (${reason}).`, profitTableError);
+                console.warn(
+                    `[${source}] Profit table recovery failed for ${contractId} (${reason}).`,
+                    profitTableError
+                );
             } finally {
                 profitTableRequestInFlight = false;
             }
@@ -426,7 +428,10 @@ export const streamContractUntilSettled = ({
                     void requestProfitTableSnapshot(reason);
                 }
             } catch (snapshotError) {
-                console.warn(`[${source}] Contract settlement snapshot failed for ${contractId} (${reason}).`, snapshotError);
+                console.warn(
+                    `[${source}] Contract settlement snapshot failed for ${contractId} (${reason}).`,
+                    snapshotError
+                );
                 if (recoveryMode) void requestProfitTableSnapshot(reason);
             } finally {
                 snapshotRequestInFlight = false;

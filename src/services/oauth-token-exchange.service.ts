@@ -1,4 +1,9 @@
-import { clearCodeVerifier, getDomainConfig, getCodeVerifier, isProduction } from '@/components/shared/utils/config/config';
+import {
+    clearCodeVerifier,
+    getDomainConfig,
+    getCodeVerifier,
+    isProduction,
+} from '@/components/shared/utils/config/config';
 import { ErrorLogger } from '@/utils/error-logger';
 import brandConfig from '../../brand.config.json';
 

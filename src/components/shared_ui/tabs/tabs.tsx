@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { History } from 'history';
 import { useConstructor } from '@/hooks/useConstructor';
 import ThemedScrollbars from '../themed-scrollbars/themed-scrollbars';
 import Tab from './tab';
@@ -24,7 +25,7 @@ type TTabsProps = {
     has_active_line?: boolean;
     has_bottom_line?: boolean;
     header_fit_content?: boolean;
-    history: History;
+    history?: History;
     icon_color?: string;
     icon_size?: number;
     is_100vw?: boolean;
@@ -65,7 +66,11 @@ const Tabs = ({
     const active_tab_ref = React.useRef<HTMLLIElement>(null);
     const tabs_wrapper_ref = React.useRef<HTMLUListElement>(null);
     const pushHash = (hash: string) => {
-        history.replace(`${history.location.pathname}${window.location.search}#${hash}`);
+        if (history) {
+            history.replace(`${history.location.pathname}${window.location.search}#${hash}`);
+        } else {
+            window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}#${hash}`);
+        }
     };
 
     const setActiveLineStyle = React.useCallback(() => {

@@ -36,7 +36,6 @@ import {
     LabelPairedChartTrendUpCaptionRegularIcon,
     LabelPairedCircleStarCaptionRegularIcon,
     LabelPairedCopyCaptionRegularIcon,
-    LabelPairedLightbulbCaptionRegularIcon,
     LabelPairedObjectsColumnCaptionRegularIcon,
     LabelPairedPuzzlePieceTwoCaptionBoldIcon,
     LabelPairedSearchCaptionRegularIcon,
@@ -48,13 +47,13 @@ import { useDevice } from '@deriv-com/ui';
 import RunPanel from '../../components/run-panel';
 import AutoTrades from '../auto-trades/auto-trades';
 import BestBots from '../best-bots';
-import BotIdeas from '../bot-ideas';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
 import ManualTrading from '../manual-trading';
 import RunStrategy from '../dashboard/run-strategy';
 import Analysistool from '../analysistool';
 import Scanner from '../scanner';
+import HybridBots from '../hybrid-bots';
 import './main.scss';
 
 const Dtrader = React.lazy(() => import('../dtrader'));
@@ -99,10 +98,9 @@ const AppWrapper = observer(() => {
         [key: string]: string;
     };
     const { clear } = summary_card;
-    const { BOT_BUILDER, BOT_IDEAS, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER, DTRADER } = DBOT_TABS;
+    const { BOT_BUILDER, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER, DTRADER } = DBOT_TABS;
     const init_render = React.useRef(true);
     const hash = [
-        'bot_ideas',
         'best_bots',
         'dashboard',
         'bot_builder',
@@ -118,14 +116,13 @@ const AppWrapper = observer(() => {
         'copy_trading',
         'tradingview',
         'speedbot',
-            'chats',
+        'hybrid_bots',
+        'chats',
     ];
-    const show_bot_ideas = isDomainFeatureEnabled('botIdeas');
     const show_auto_trades = isDomainFeatureEnabled('autoTrades');
     const show_manual_trading = isDomainFeatureEnabled('manualTrading');
     const show_scanner = isDomainFeatureEnabled('scanner');
     const isMainTabVisible = (tab_index: number) => {
-        if (tab_index === BOT_IDEAS) return show_bot_ideas;
         if (tab_index === AUTO_TRADES) return show_auto_trades;
         if (tab_index === MANUAL_TRADING) return show_manual_trading;
         if (tab_index === SCANNER) return show_scanner;
@@ -437,16 +434,6 @@ const AppWrapper = observer(() => {
     const handleTabChange = React.useCallback(
         (tab_index: number) => {
             setActiveTab(tab_index);
-            if (dashboard.active_tab !== tab_index) return;
-            const el_id = TAB_IDS[tab_index];
-            if (el_id) {
-                const el_tab = document.getElementById(el_id);
-                setTimeout(() => {
-                    // Use nearest/start scrolling to avoid aggressive horizontal centering
-                    // which can cause left/right layout shifts when switching tabs.
-                    el_tab?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-                }, 10);
-            }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [dashboard, setActiveTab]
@@ -474,38 +461,7 @@ const AppWrapper = observer(() => {
                     <div>
                         {!isDesktop && left_tab_shadow && <span className='tabs-shadow tabs-shadow--left' />}{' '}
                         <Tabs active_index={active_tab} className='main__tabs' onTabItemClick={handleTabChange} top>
-                            {show_bot_ideas && (
-                                <div
-                                    label={
-                                        <>
-                                            <LabelPairedLightbulbCaptionRegularIcon
-                                                height='24px'
-                                                width='24px'
-                                                fill='#c8a45d'
-                                            />
-                                            <Localize i18n_default_text='Bot Ideas' />
-                                        </>
-                                    }
-                                    id='id-bot-ideas'
-                                >
-                                    <BotIdeas />
-                                </div>
-                            )}
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedCircleStarCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='Best Bots' />
-                                    </>
-                                }
-                                id='id-best-bots'
-                            >
-                                <BestBots />
-                            </div>
+
                             <div
                                 label={
                                     <>
@@ -551,7 +507,7 @@ const AppWrapper = observer(() => {
                                     <AutoTrades />
                                 </div>
                             )}
-{show_manual_trading && (
+                            {show_manual_trading && (
                                 <div
                                     label={
                                         <>
@@ -671,7 +627,9 @@ const AppWrapper = observer(() => {
                                 id='id-trading-bots'
                             >
                                 <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading Trading Bots...')} />}
+                                    fallback={
+                                        <ChunkLoader message={localize('Please wait, loading Trading Bots...')} />
+                                    }
                                 >
                                     <TradingBots />
                                 </Suspense>
@@ -698,18 +656,16 @@ const AppWrapper = observer(() => {
                             <div
                                 label={
                                     <>
-                                        <LabelPairedCopyCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
+                                        <LabelPairedCopyCaptionRegularIcon height='24px' width='24px' fill='#c8a45d' />
                                         <Localize i18n_default_text='Copy Trading' />
                                     </>
                                 }
                                 id='id-copy-trading'
                             >
                                 <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading Copy Trading...')} />}
+                                    fallback={
+                                        <ChunkLoader message={localize('Please wait, loading Copy Trading...')} />
+                                    }
                                 >
                                     <CopyTrading />
                                 </Suspense>
@@ -755,6 +711,21 @@ const AppWrapper = observer(() => {
                             <div
                                 label={
                                     <>
+                                        <LabelPairedPuzzlePieceTwoCaptionBoldIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='#c8a45d'
+                                        />
+                                        <Localize i18n_default_text='Hybrid Bots' />
+                                    </>
+                                }
+                                id='id-hybrid-bots'
+                            >
+                                <HybridBots />
+                            </div>
+                            <div
+                                label={
+                                    <>
                                         <LabelPairedHandshakeCaptionRegularIcon
                                             height='24px'
                                             width='24px'
@@ -765,7 +736,9 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-chats'
                             >
-                                <Suspense fallback={<ChunkLoader message={localize('Please wait, loading Chats...')} />}>
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading Chats...')} />}
+                                >
                                     <Chats />
                                 </Suspense>
                             </div>
@@ -785,9 +758,7 @@ const AppWrapper = observer(() => {
             </DesktopWrapper>
             <MobileWrapper>{!is_open && active_tab !== DTRADER && <RunPanel />}</MobileWrapper>
             <Dialog
-                cancel_button_text={
-                    navigation_stop_in_progress ? undefined : localize('Stay')
-                }
+                cancel_button_text={navigation_stop_in_progress ? undefined : localize('Stay')}
                 className='dc-dialog__wrapper--fixed'
                 confirm_button_text={
                     navigation_stop_in_progress ? localize('Stopping trades...') : localize('Stop and switch')
@@ -845,17 +816,7 @@ const AppWrapper = observer(() => {
                 );
             })()}
 
-            {/* Floating AI Scanner Button */}
-            {show_scanner && (
-                <button
-                    className='floating-scanner-button'
-                    onClick={() => dashboard.setFloatingScannerVisibility(true)}
-                    title={localize('Open AI Scanner')}
-                    aria-label={localize('Open AI Scanner')}
-                >
-                    <LabelPairedSearchCaptionRegularIcon height='20px' width='20px' fill='currentColor' />
-                </button>
-            )}
+
         </React.Fragment>
     );
 });

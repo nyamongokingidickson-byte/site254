@@ -1,5 +1,4 @@
 // Export all pages for convenient imports
-export { default as BotIdeas } from './bot-ideas';
 export { default as BestBots } from './best-bots';
 export { default as Dashboard } from './dashboard';
 export { default as BotBuilder } from './bot-builder';
@@ -15,4 +14,6 @@ export { default as Strategies } from './free-bots/strategies';
 export { default as CopyTrading } from './copy-trading';
 export { default as TradingView } from './tradingview';
 export { default as SpeedBot } from './speedbot';
+export { default as Hyperbot } from './hyperbot';
+export { default as Diffbot } from './diffbot';
 export { default as Chats } from './chats';

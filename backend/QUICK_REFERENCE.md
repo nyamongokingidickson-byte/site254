@@ -32,6 +32,14 @@ npm run server
 - `GET /api/best-bot-stats/:id` - One bot
 - `POST /api/best-bot-stats/:id` - Update
 
+**AI Strategy**
+
+- `POST /api/ai/auto-trade-strategy` - Generate auto-trade strategy plan
+
+**Exchange Rates**
+
+- `GET /api/exchange-rates/usd-kes` - USD/KES exchange rate
+
 **Scanner**
 
 - `GET /api/scanner/signal` - Current signal

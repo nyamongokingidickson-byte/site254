@@ -8,7 +8,12 @@ import ChunkLoader from '@/components/loader/chunk-loader';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { getBotsManifest, prefetchAllXmlInBackground } from '@/utils/freebots-cache';
 import { crypto_currencies_display_order, fiat_currencies_display_order } from '@/components/shared';
-import { forceUpdateAppId, getConfiguredClientId, getConfiguredAppId, getAuthRedirectUri } from '@/components/shared/utils/config/config';
+import {
+    forceUpdateAppId,
+    getConfiguredClientId,
+    getConfiguredAppId,
+    getAuthRedirectUri,
+} from '@/components/shared/utils/config/config';
 import { observer as globalObserver } from '@/external/bot-skeleton/utils/observer';
 import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
 import { LegacyAccount, useOAuthCallback } from '@/hooks/auth/useOAuthCallback';
@@ -121,10 +126,8 @@ export const getGlobalCopyTradingManager = () => globalCopyTradingManager;
 
 function storeLegacyAccounts(accounts: LegacyAccount[]) {
     const accountsList: Record<string, string> = {};
-    const clientAccounts: Record<
-        string,
-        { currency: string; token: string; account_type: string; balance: string }
-    > = {};
+    const clientAccounts: Record<string, { currency: string; token: string; account_type: string; balance: string }> =
+        {};
 
     accounts.forEach(({ loginid, token, currency }) => {
         const account_type = loginid.startsWith('VRT') || loginid.startsWith('VRTC') ? 'demo' : 'real';
@@ -193,7 +196,9 @@ function App() {
             const maskedClient = clientId ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}` : 'not-configured';
             const maskedApp = appId ? String(appId) : 'not-configured';
             // eslint-disable-next-line no-console
-            console.info(`[OAuth Diagnostic] client_id: ${maskedClient}, app_id: ${maskedApp}, redirect_uri: ${redirectUri}`);
+            console.info(
+                `[OAuth Diagnostic] client_id: ${maskedClient}, app_id: ${maskedApp}, redirect_uri: ${redirectUri}`
+            );
         } catch (e) {
             // ignore diagnostics failures
         }

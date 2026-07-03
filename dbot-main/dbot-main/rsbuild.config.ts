@@ -62,20 +62,26 @@ export default defineConfig({
             '@/utils': path.resolve(__dirname, './src/utils'),
             '@/constants': path.resolve(__dirname, './src/constants'),
             '@/stores': path.resolve(__dirname, './src/stores'),
+            '@deriv/deriv-charts': path.resolve('./node_modules/@deriv-com/smartcharts-champion'),
         },
     },
     output: {
         copy: [
             {
-                from: 'node_modules/@deriv/deriv-charts/dist/*',
+                from: 'node_modules/@deriv-com/smartcharts-champion/dist/*',
                 to: 'js/smartcharts/[name][ext]',
                 globOptions: {
                     ignore: ['**/*.LICENSE.txt'],
                 },
             },
-            { from: 'node_modules/@deriv/deriv-charts/dist/chart/assets/*', to: 'assets/[name][ext]' },
-            { from: 'node_modules/@deriv/deriv-charts/dist/chart/assets/fonts/*', to: 'assets/fonts/[name][ext]' },
-            { from: 'node_modules/@deriv/deriv-charts/dist/chart/assets/shaders/*', to: 'assets/shaders/[name][ext]' },
+            {
+                from: 'node_modules/@deriv-com/smartcharts-champion/dist/chart',
+                to: 'js/smartcharts/chart',
+            },
+            {
+                from: 'node_modules/@deriv-com/smartcharts-champion/dist/assets',
+                to: 'assets',
+            },
             { from: path.join(__dirname, 'public') },
         ],
     },

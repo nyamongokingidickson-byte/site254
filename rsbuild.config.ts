@@ -42,6 +42,7 @@ export default defineConfig({
             '@/utils': path.resolve(__dirname, './src/utils'),
             '@/constants': path.resolve(__dirname, './src/constants'),
             '@/stores': path.resolve(__dirname, './src/stores'),
+            '@deriv/deriv-charts': path.resolve('./node_modules/@deriv-com/smartcharts-champion'),
         },
     },
     output: {
@@ -53,14 +54,13 @@ export default defineConfig({
                     ignore: ['**/*.LICENSE.txt'],
                 },
             },
-            { from: 'node_modules/@deriv-com/smartcharts-champion/dist/assets/*', to: 'assets/[name][ext]' },
             {
-                from: 'node_modules/@deriv-com/smartcharts-champion/dist/assets/fonts/*',
-                to: 'assets/fonts/[name][ext]',
+                from: 'node_modules/@deriv-com/smartcharts-champion/dist/chart',
+                to: 'js/smartcharts/chart',
             },
             {
-                from: 'node_modules/@deriv-com/smartcharts-champion/dist/assets/shaders/*',
-                to: 'assets/shaders/[name][ext]',
+                from: 'node_modules/@deriv-com/smartcharts-champion/dist/assets',
+                to: 'assets',
             },
             { from: path.join(__dirname, 'public') },
         ],
@@ -69,7 +69,7 @@ export default defineConfig({
         template: './index.html',
     },
     server: {
-        port: 5000,
+        port: 8443,
         host: '0.0.0.0',
         compress: true,
         proxy: {

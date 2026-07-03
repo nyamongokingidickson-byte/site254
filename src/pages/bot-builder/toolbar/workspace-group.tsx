@@ -11,6 +11,7 @@ import {
     LabelPairedMagnifyingGlassMinusMdRegularIcon,
     LabelPairedMagnifyingGlassPlusMdRegularIcon,
     LabelPairedObjectsAlignLeftMdRegularIcon,
+    LabelPairedSearchCaptionRegularIcon,
 } from '@deriv/quill-icons/LabelPaired';
 import { localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
@@ -103,6 +104,19 @@ const WorkspaceGroup = observer(() => {
                         />
                     </>
                 )}
+                <div className='vertical-divider' />
+                <ToolbarIcon
+                    popover_message={localize('Signals Scanner')}
+                    icon={
+                        <span
+                            className='toolbar__icon'
+                            id='db-toolbar__scanner-button'
+                            onClick={() => dashboard.setFloatingScannerVisibility(true)}
+                        >
+                            <LabelPairedSearchCaptionRegularIcon height='24px' width='24px' />
+                        </span>
+                    }
+                />
                 <div className='vertical-divider' />
                 <ToolbarIcon
                     popover_message={localize('Undo')}

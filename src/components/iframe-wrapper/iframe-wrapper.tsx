@@ -94,7 +94,9 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
             return (
                 <div className='iframe-wrapper__error'>
                     <p>Failed to load {title}</p>
-                    <a href={src} target='_blank' rel='noopener noreferrer'>Open in new tab</a>
+                    <a href={src} target='_blank' rel='noopener noreferrer'>
+                        Open in new tab
+                    </a>
                 </div>
             );
         }

@@ -2,11 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { localize } from '@deriv-com/translations';
-import {
-    generateDerivApiInstance,
-    getToken,
-    getLoginId,
-} from '@/external/bot-skeleton/services/api/appId';
+import { generateDerivApiInstance, getToken, getLoginId } from '@/external/bot-skeleton/services/api/appId';
 import { contract_stages } from '@/constants/contract-stage';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { useStore } from '@/hooks/useStore';
@@ -65,23 +61,19 @@ const Matches = observer(() => {
 
     // Initialize API and load symbols
     useEffect(() => {
-        if (active_tab !== DBOT_TABS.MATCHES) return;
+        const api = generateDerivApiInstance();
+        apiRef.current = api;
 
         const init = async () => {
-            const api = generateDerivApiInstance();
-            apiRef.current = api;
-
-            // Load symbols - Volatility and Jump Index markets
             try {
                 const { active_symbols, error } = await api.send({ active_symbols: 'brief' });
                 if (error) throw error;
                 const syn = (active_symbols || [])
                     .filter(s => {
-                        // Include all Volatility Index markets, including standard and (1s) variants
-                        return /Volatility.*Index/i.test(s.display_name);
+                        // Same filter as SpeedBot: get synthetic indices and R_ symbols
+                        return /synthetic/i.test(s.market) || /^R_/.test(s.symbol);
                     })
                     .map(s => ({ symbol: s.symbol, display_name: s.display_name }))
-                    // Sort by index size and put standard indices before 1s variants for the same number
                     .sort((a, b) => {
                         const numA = parseInt(a.display_name.match(/\d+/)?.[0]) || 0;
                         const numB = parseInt(b.display_name.match(/\d+/)?.[0]) || 0;
@@ -131,7 +123,7 @@ const Matches = observer(() => {
             });
             contractSubscriptions.current = [];
         };
-    }, [active_tab]);
+    }, []);
 
     const getActiveContractAccountId = () => {
         if (typeof window === 'undefined') return null;
@@ -184,7 +176,6 @@ const Matches = observer(() => {
 
     // Subscribe to ticks
     useEffect(() => {
-        if (active_tab !== DBOT_TABS.MATCHES) return;
         if (market && ticks && apiRef.current) {
             subscribeToTicks();
             return () => {
@@ -214,7 +205,7 @@ const Matches = observer(() => {
                 isSubscribed.current = false;
             };
         }
-    }, [market, ticks, active_tab]);
+    }, [market, ticks]);
 
     const subscribeToTicks = async () => {
         if (!apiRef.current) {
@@ -409,6 +400,12 @@ const Matches = observer(() => {
             setIsAuthorized(true);
             const loginid = authorize?.loginid || getLoginId();
             setAccountCurrency(authorize?.currency || currency);
+            try {
+                // Sync auth state into shared ClientStore like SpeedBot
+                store?.client?.setLoginId?.(loginid || '');
+                store?.client?.setCurrency?.(authorize?.currency || currency);
+                store?.client?.setIsLoggedIn?.(true);
+            } catch {}
         } catch (e) {
             console.error('Authorization error:', e);
             throw e;

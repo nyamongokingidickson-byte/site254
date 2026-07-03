@@ -77,6 +77,18 @@ GET    /api/best-bot-stats/:id     Single bot
 POST   /api/best-bot-stats/:id     Update
 ```
 
+### AI Strategy (1 endpoint)
+
+```
+POST   /api/ai/auto-trade-strategy  Generate auto-trade strategy plan
+```
+
+### Exchange Rates (1 endpoint)
+
+```
+GET    /api/exchange-rates/usd-kes  Get USD/KES exchange rate
+```
+
 ### Scanner (2 endpoints)
 
 ```

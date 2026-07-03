@@ -81,7 +81,8 @@ const CallbackPage = () => {
                         };
 
                         existing.currency = account.currency || existing.currency;
-                        existing.account_type = account.account_type || existing.account_type || (account.is_virtual ? 'demo' : 'real');
+                        existing.account_type =
+                            account.account_type || existing.account_type || (account.is_virtual ? 'demo' : 'real');
                         existing.balance = account.balance?.toString() || existing.balance || '0';
                         existing.token = existing.token || tokens.token1;
 
@@ -116,7 +117,9 @@ const CallbackPage = () => {
                         updateClientAccountsFromAuthorize(authorize);
 
                         const firstId = authorize?.account_list?.[0]?.loginid;
-                        const filteredTokens = Object.values(clientAccounts).filter(account => account.loginid === firstId);
+                        const filteredTokens = Object.values(clientAccounts).filter(
+                            account => account.loginid === firstId
+                        );
                         if (filteredTokens.length) {
                             const selectedAccount = filteredTokens[0];
                             localStorage.setItem('authToken', selectedAccount.token);

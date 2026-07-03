@@ -11,9 +11,11 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 ### Backend OAuth Endpoints (Node.js/Vercel)
 
 #### 1. `/api/oauth/start` - Start OAuth Flow
+
 **File:** `api/oauth/start.js`
 
 **Features:**
+
 - Generates PKCE code_verifier (128 characters)
 - Computes code_challenge = SHA256(verifier)
 - Generates state parameter (CSRF protection)
@@ -22,6 +24,7 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - Redirects to Deriv authorization endpoint
 
 **Security:**
+
 - PKCE proof key prevents authorization code interception
 - State parameter prevents CSRF attacks
 - HttpOnly cookies prevent XSS token theft
@@ -29,9 +32,11 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - SameSite=Strict prevents cross-site cookie sending
 
 #### 2. `/api/oauth/callback` - Handle OAuth Callback
+
 **File:** `api/oauth/callback.js`
 
 **Features:**
+
 - Validates state parameter (CSRF check)
 - Retrieves code_verifier from cookie (PKCE validation)
 - Exchanges authorization code for tokens
@@ -43,20 +48,24 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - Redirects to frontend
 
 **Account Discovery:**
+
 - Calls `https://api.deriv.com/api/v3?action=account_list`
 - No filtering - accepts all account types
 - Priority: Preferred > CR > DOT > ROT > First
 
 **Error Handling:**
+
 - CSRF validation (state mismatch detection)
 - redirect_uri mismatch prevention
 - invalid_grant handling (expired/reused code)
 - Missing scope warnings
 
 #### 3. `/api/oauth/session` - Validate Session
+
 **File:** `api/oauth/session.js`
 
 **Features:**
+
 - Called on app startup by frontend
 - Reads access token from HttpOnly cookies
 - Validates token with Deriv API
@@ -65,6 +74,7 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - Provides selected account information
 
 **Session Data Returned:**
+
 - `logged_in`: boolean
 - `access_token`: for frontend use
 - `app_id`: registered app ID
@@ -75,9 +85,11 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - `email`: account email
 
 #### 4. `/api/oauth/refresh` - Refresh Token
+
 **File:** `api/oauth/refresh.js`
 
 **Features:**
+
 - Called when access token expires soon
 - Uses refresh_token to get new access_token
 - Updates both tokens in HttpOnly cookies
@@ -85,19 +97,23 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - Handles expired refresh_token gracefully
 
 **Automatic Triggers:**
+
 - TokenManager checks every 5 minutes before expiry
 - Called on 401 Unauthorized responses
 - Manual trigger available: `POST /api/oauth/refresh`
 
 #### 5. `/api/oauth/logout` - Logout
+
 **File:** `api/oauth/logout.js`
 
 **Features:**
+
 - Clears all OAuth cookies
 - Sets Max-Age=0 to delete cookies
 - Returns success response
 
 **Cookies Cleared:**
+
 - deriv_access_token
 - deriv_refresh_token
 - deriv_token_expires_at
@@ -109,15 +125,18 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - oauth_preferred_account
 
 #### 6. `/api/websocket/session` - WebSocket Session
+
 **File:** `api/websocket/session.js`
 
 **Features:**
+
 - Creates OTP session for new wallet accounts
 - Supports DOT (crypto) and ROT (real) accounts
 - Returns WebSocket URL and session ID
 - Validates account type
 
 **Use Cases:**
+
 - Real-time balance updates for DOT/ROT accounts
 - Live account information
 - Trade execution monitoring
@@ -128,7 +147,9 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 ### Frontend Services
 
 #### TokenManager (`src/services/auth/TokenManager.ts`)
+
 **Responsibilities:**
+
 - Store/retrieve access tokens
 - Track token expiry
 - Calculate time until expiry
@@ -136,6 +157,7 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - Validate token freshness
 
 **Methods:**
+
 - `storeToken(tokenResponse)` - Save token to storage
 - `getAccessToken()` - Get valid token or null
 - `getRefreshToken()` - Get refresh token
@@ -145,13 +167,16 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - `isTokenExpiringSoon()` - Check if <5min to expiry
 
 #### PKCEService (`src/services/auth/PKCEService.ts`)
+
 **Responsibilities:**
+
 - Generate code_verifier (128 characters)
 - Generate code_challenge (SHA256)
 - Generate state parameter
 - Store/retrieve PKCE parameters
 
 **Methods:**
+
 - `generateCodeVerifier()` - Create random verifier
 - `generateCodeChallenge(verifier)` - SHA256 hash
 - `generateState()` - CSRF token
@@ -160,13 +185,16 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - `validateState(state)` - Validate state parameter
 
 #### SessionManager (`src/services/auth/SessionManager.ts`)
+
 **Responsibilities:**
+
 - Create/validate sessions
 - Track activity timeout
 - Monitor session expiry
 - Encrypt session data
 
 **Methods:**
+
 - `createSession(data)` - Create new session
 - `getSession()` - Get current session
 - `isSessionValid()` - Check validity
@@ -174,26 +202,32 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - `invalidateSession()` - Force logout
 
 #### OAuthFlowService (`src/services/auth/OAuthFlowService.ts`)
+
 **Responsibilities:**
+
 - Orchestrate complete OAuth flow
 - Handle authorization
 - Manage token refresh
 - Handle errors
 
 **Methods:**
+
 - `startAuthorizationFlow(options)` - Initiate login
 - `handleCallback(params)` - Process callback
 - `refreshToken()` - Refresh access token
 - `revokeToken()` - Revoke token
 
 #### OAuthErrorHandler (`src/services/auth/OAuthErrorHandler.ts`)
+
 **Responsibilities:**
+
 - Parse OAuth errors
 - Provide user-friendly messages
 - Suggest recovery actions
 - Validate OAuth parameters
 
 **Methods:**
+
 - `parseOAuthError(error)` - Extract error info
 - `handleOAuthError(error, context)` - Log and handle
 - `getOAuthErrorMessage(error)` - User message
@@ -202,13 +236,16 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 - `validatePKCEParameters(verifier, challenge)` - PKCE check
 
 #### WebSocketSessionManager (`src/services/websocket/WebSocketSessionManager.ts`)
+
 **Responsibilities:**
+
 - Manage WebSocket connections for new wallet accounts
 - Handle real-time balance updates
 - Manage reconnection with exponential backoff
 - Queue pending messages
 
 **Methods:**
+
 - `initializeSession()` - Get WebSocket credentials
 - `connect()` - Establish connection
 - `disconnect()` - Close connection
@@ -225,23 +262,27 @@ This document describes the complete unified OAuth2 PKCE authentication system i
 ### Frontend Hooks
 
 #### useOauth2 (`src/hooks/auth/useOauth2.ts`)
+
 **Responsibilities:**
+
 - Provide login function
 - Provide logout function
 - Manage login state
 
 **Exported:**
+
 ```javascript
 {
-  loginWithOAuth,        // () => Promise<void>
-  oAuthLogout,          // () => Promise<void>
-  retriggerOAuth2Login, // () => Promise<void>
-  isSingleLoggingIn,    // boolean
-  isLoggingOut          // boolean
+    (loginWithOAuth, // () => Promise<void>
+        oAuthLogout, // () => Promise<void>
+        retriggerOAuth2Login, // () => Promise<void>
+        isSingleLoggingIn, // boolean
+        isLoggingOut); // boolean
 }
 ```
 
 **Usage:**
+
 ```javascript
 const { loginWithOAuth, oAuthLogout } = useOauth2();
 
@@ -253,13 +294,16 @@ const { loginWithOAuth, oAuthLogout } = useOauth2();
 ```
 
 #### useOAuthCallback (`src/hooks/auth/useOAuthCallback.ts`)
+
 **Responsibilities:**
+
 - Detect OAuth callback parameters
 - Validate callback parameters
 - Clean up URL
 - Handle errors
 
 **Features:**
+
 - Automatic callback detection
 - CSRF validation
 - URL parameter cleanup
@@ -272,7 +316,9 @@ const { loginWithOAuth, oAuthLogout } = useOauth2();
 ### Frontend Components
 
 #### AuthWrapper (`src/app/AuthWrapper.tsx`)
+
 **Responsibilities:**
+
 - Restore session from server on app startup
 - Initialize API with tokens
 - Validate authentication
@@ -280,6 +326,7 @@ const { loginWithOAuth, oAuthLogout } = useOauth2();
 - Clear auth data on failure
 
 **Flow:**
+
 1. Check for legacy login info in URL
 2. Restore session from server if needed
 3. Initialize API and validate auth
@@ -287,6 +334,7 @@ const { loginWithOAuth, oAuthLogout } = useOauth2();
 5. Render app
 
 **Key Functions:**
+
 - `restoreLoginFromServerSession()` - Get session from server
 - `initializeApiAndValidateAuth()` - Initialize and validate
 
@@ -294,21 +342,22 @@ const { loginWithOAuth, oAuthLogout } = useOauth2();
 
 ## Account Type Support Matrix
 
-| Feature | CR (Legacy) | DOT (Crypto) | ROT (Real) | Demo (VRTC) |
-|---------|-----------|-------------|-----------|-----------|
-| Account Prefix | CR | DOT | ROT | VRTC |
-| Account Type | "cr" | "dot" | "rot" | "demo" |
-| Direct API Trade | ✅ | ✅ | ✅ | ✅ |
-| WebSocket Support | ❌ | ✅ | ✅ | ❌ |
-| Real-time Balance | API only | WebSocket | WebSocket | API only |
-| Currency Type | Fiat | Crypto | Fiat | Fiat/Crypto |
-| Backward Compatible | ✅ | ⚠️ | ⚠️ | ✅ |
+| Feature             | CR (Legacy) | DOT (Crypto) | ROT (Real) | Demo (VRTC) |
+| ------------------- | ----------- | ------------ | ---------- | ----------- |
+| Account Prefix      | CR          | DOT          | ROT        | VRTC        |
+| Account Type        | "cr"        | "dot"        | "rot"      | "demo"      |
+| Direct API Trade    | ✅          | ✅           | ✅         | ✅          |
+| WebSocket Support   | ❌          | ✅           | ✅         | ❌          |
+| Real-time Balance   | API only    | WebSocket    | WebSocket  | API only    |
+| Currency Type       | Fiat        | Crypto       | Fiat       | Fiat/Crypto |
+| Backward Compatible | ✅          | ⚠️           | ⚠️         | ✅          |
 
 ---
 
 ## Security Features
 
 ### 1. PKCE (Proof Key for Public Clients)
+
 **Protection:** Authorization code interception prevention
 
 ```
@@ -321,11 +370,13 @@ Deriv: Validates SHA256(code_verifier) == code_challenge
 ```
 
 **Attack Prevented:**
+
 - Attacker intercepts authorization code
 - Attacker cannot replay code without verifier
 - Code is single-use and tied to original client
 
 ### 2. State Parameter (CSRF Protection)
+
 **Protection:** Cross-site request forgery prevention
 
 ```
@@ -338,11 +389,13 @@ Backend: Validate stored_state === returned_state
 ```
 
 **Attack Prevented:**
+
 - Attacker tricks user into clicking malicious link
 - Returned state won't match expected state
 - Request rejected
 
 ### 3. HttpOnly Cookies
+
 **Protection:** XSS (Cross-site Scripting) prevention
 
 ```
@@ -353,12 +406,14 @@ Result: XSS attack cannot steal tokens
 ```
 
 **Benefits:**
+
 - JavaScript cannot access tokens
 - Tokens only sent in HTTP requests
 - Automatic cookie management by browser
 - No manual token handling needed
 
 ### 4. Secure Cookie Flags
+
 **Protection:** Man-in-the-middle and mixed protocol attacks
 
 ```
@@ -374,6 +429,7 @@ Development:
 ```
 
 ### 5. Session Timeout
+
 **Protection:** Token theft and session hijacking
 
 ```
@@ -383,6 +439,7 @@ Token Refresh: 5 minutes before expiry (automatic)
 ```
 
 ### 6. Scope Validation
+
 **Protection:** Privilege escalation and over-permission
 
 ```
@@ -398,26 +455,28 @@ Action: Reject if scope insufficient
 
 ### Common Errors
 
-| Error | Cause | Recovery |
-|-------|-------|----------|
-| `invalid_grant` | Code expired/invalid/reused | Retry login |
-| `invalid_state` | CSRF attack or lost cookie | Retry login |
-| `redirect_uri_mismatch` | Config error | Check env vars |
-| `access_denied` | User denied access | Show login again |
-| `invalid_scope` | Permission issue | Check scopes |
-| `server_error` | Deriv API error | Retry or contact support |
-| `token_expired` | Token expired | Auto-refresh or re-login |
-| `state_mismatch` | CSRF or cookie lost | Retry login |
+| Error                   | Cause                       | Recovery                 |
+| ----------------------- | --------------------------- | ------------------------ |
+| `invalid_grant`         | Code expired/invalid/reused | Retry login              |
+| `invalid_state`         | CSRF attack or lost cookie  | Retry login              |
+| `redirect_uri_mismatch` | Config error                | Check env vars           |
+| `access_denied`         | User denied access          | Show login again         |
+| `invalid_scope`         | Permission issue            | Check scopes             |
+| `server_error`          | Deriv API error             | Retry or contact support |
+| `token_expired`         | Token expired               | Auto-refresh or re-login |
+| `state_mismatch`        | CSRF or cookie lost         | Retry login              |
 
 ### Error Recovery Strategies
 
 **Recoverable Errors:**
+
 1. Automatic retry with exponential backoff
 2. Clear session and redirect to login
 3. Show user-friendly error message
 4. Log error for debugging
 
 **Non-Recoverable Errors:**
+
 1. Log error details
 2. Show error to user
 3. Suggest contacting support
@@ -428,6 +487,7 @@ Action: Reject if scope insufficient
 ## Deployment Checklist
 
 ### Environment Variables
+
 - [ ] `DERIV_OAUTH_CLIENT_ID` - OAuth client ID
 - [ ] `DERIV_APP_ID` - Legacy app ID (optional)
 - [ ] `DERIV_CLIENT_SECRET` - OAuth client secret
@@ -435,6 +495,7 @@ Action: Reject if scope insufficient
 - [ ] `NODE_ENV` - Set to "production"
 
 ### Backend Deployment
+
 - [ ] All OAuth endpoints deployed
 - [ ] WebSocket session endpoint deployed
 - [ ] HTTPS enabled
@@ -443,6 +504,7 @@ Action: Reject if scope insufficient
 - [ ] Redirect URI matches exactly
 
 ### Frontend Deployment
+
 - [ ] All services compiled
 - [ ] All hooks compiled
 - [ ] AuthWrapper integrated
@@ -453,6 +515,7 @@ Action: Reject if scope insufficient
 - [ ] CSP headers configured
 
 ### Testing
+
 - [ ] Login flow completes successfully
 - [ ] Tokens stored in HttpOnly cookies
 - [ ] Session persists after page reload
@@ -468,6 +531,7 @@ Action: Reject if scope insufficient
 - [ ] Real-time balances update
 
 ### Post-Deployment
+
 - [ ] Monitor error logs
 - [ ] Check token refresh frequency
 - [ ] Verify session persistence
@@ -518,14 +582,15 @@ Action: Reject if scope insufficient
 ## Integration Examples
 
 ### 1. Add Login Button
+
 ```typescript
 import { useOauth2 } from '@/hooks/auth/useOauth2';
 
 function LoginButton() {
   const { loginWithOAuth, isSingleLoggingIn } = useOauth2();
-  
+
   return (
-    <button 
+    <button
       onClick={loginWithOAuth}
       disabled={isSingleLoggingIn}
     >
@@ -536,14 +601,15 @@ function LoginButton() {
 ```
 
 ### 2. Add Logout Button
+
 ```typescript
 import { useOauth2 } from '@/hooks/auth/useOauth2';
 
 function LogoutButton() {
   const { oAuthLogout, isLoggingOut } = useOauth2();
-  
+
   return (
-    <button 
+    <button
       onClick={oAuthLogout}
       disabled={isLoggingOut}
     >
@@ -554,17 +620,18 @@ function LogoutButton() {
 ```
 
 ### 3. Check Login Status
+
 ```typescript
 import { useObservable } from '@deriv-com/utils';
 import RootStore from '@/stores/root-store';
 
 function AccountInfo() {
   const { client } = useObservable(RootStore);
-  
+
   if (!client.is_logged_in) {
     return <div>Not logged in</div>;
   }
-  
+
   return (
     <div>
       Account: {client.loginid}
@@ -576,35 +643,35 @@ function AccountInfo() {
 ```
 
 ### 4. Handle WebSocket for New Accounts
+
 ```typescript
 import { getOrCreateWebSocketManager } from '@/services/websocket/WebSocketSessionManager';
 
 async function setupWebSocketForAccount(accountId, accountType) {
-  if (!['dot', 'rot'].includes(accountType)) {
-    return; // CR accounts don't use WebSocket
-  }
-  
-  try {
-    const manager = await getOrCreateWebSocketManager({
-      account_id: accountId,
-      account_type: accountType,
-      access_token: localStorage.getItem('authToken'),
-    });
-    
-    // Listen for balance updates
-    manager.onBalanceChanged((balance) => {
-      console.log('New balance:', balance);
-      updateUI(balance);
-    });
-    
-    // Listen for errors
-    manager.onErrorOccurred((error) => {
-      console.error('WebSocket error:', error);
-    });
-    
-  } catch (error) {
-    console.error('Failed to setup WebSocket:', error);
-  }
+    if (!['dot', 'rot'].includes(accountType)) {
+        return; // CR accounts don't use WebSocket
+    }
+
+    try {
+        const manager = await getOrCreateWebSocketManager({
+            account_id: accountId,
+            account_type: accountType,
+            access_token: localStorage.getItem('authToken'),
+        });
+
+        // Listen for balance updates
+        manager.onBalanceChanged(balance => {
+            console.log('New balance:', balance);
+            updateUI(balance);
+        });
+
+        // Listen for errors
+        manager.onErrorOccurred(error => {
+            console.error('WebSocket error:', error);
+        });
+    } catch (error) {
+        console.error('Failed to setup WebSocket:', error);
+    }
 }
 ```
 
@@ -668,24 +735,28 @@ async function setupWebSocketForAccount(accountId, accountType) {
 ## Support & Troubleshooting
 
 ### Session Not Persisting
+
 1. Check browser cookie settings - 3rd party cookies may be blocked
 2. Verify DERIV_REDIRECT_URI matches exactly (including trailing slash)
 3. Check Network tab for Set-Cookie headers
 4. Ensure SameSite cookies are supported
 
 ### Token Not Refreshing
+
 1. Check TokenManager is initialized
 2. Verify refresh_token is stored
 3. Check browser console for refresh errors
 4. Verify /api/oauth/refresh endpoint is accessible
 
 ### WebSocket Not Connecting
+
 1. Check account type is DOT or ROT
 2. Verify WebSocket proxy is configured
 3. Check browser console for WebSocket errors
 4. Verify /api/websocket/session endpoint accessible
 
 ### Login Keeps Failing
+
 1. Verify CLIENT_ID and APP_ID are correct
 2. Check DERIV_REDIRECT_URI is registered with Deriv
 3. Verify you're using HTTPS in production

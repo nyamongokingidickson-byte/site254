@@ -31,9 +31,7 @@ type TDemoBalanceOverride = {
 const DEMO_BALANCE_OVERRIDES_KEY = 'demo_balance_overrides';
 const getBalanceDecimalPlaces = (currency?: string) => {
     const normalizedCurrency = (currency || '').toUpperCase();
-    return normalizedCurrency === 'BTC' || normalizedCurrency === 'ETH' || normalizedCurrency.includes('USDT')
-        ? 8
-        : 2;
+    return normalizedCurrency === 'BTC' || normalizedCurrency === 'ETH' || normalizedCurrency.includes('USDT') ? 8 : 2;
 };
 
 export default class ClientStore {
@@ -249,7 +247,8 @@ export default class ClientStore {
                     Math.abs(
                         incomingBalance -
                             this.getDisplayedBalanceAmount(account.loginid, existingServerBalance, account.currency)
-                    ) < 1 / 10 ** getBalanceDecimalPlaces(account.currency);
+                    ) <
+                        1 / 10 ** getBalanceDecimalPlaces(account.currency);
                 const serverBalance = shouldReuseKnownServerBalance ? existingServerBalance : incomingBalance;
                 this.server_balances[account.loginid] = serverBalance;
 
@@ -433,9 +432,7 @@ export default class ClientStore {
             return Object.entries(parsed).reduce<Record<string, TDemoBalanceOverride>>((acc, [loginid, override]) => {
                 const baseline_server_balance = Number(override.baseline_server_balance ?? 0);
                 const custom_balance = Number(override.custom_balance ?? 0);
-                const last_known_server_balance = Number(
-                    override.last_known_server_balance ?? baseline_server_balance
-                );
+                const last_known_server_balance = Number(override.last_known_server_balance ?? baseline_server_balance);
 
                 if (
                     !loginid ||
@@ -504,9 +501,12 @@ export default class ClientStore {
             window.clearInterval(this.exchange_rate_refresh_timer);
         }
 
-        this.exchange_rate_refresh_timer = window.setInterval(() => {
-            this.fetchUsdKesRate();
-        }, 10 * 60 * 1000);
+        this.exchange_rate_refresh_timer = window.setInterval(
+            () => {
+                this.fetchUsdKesRate();
+            },
+            10 * 60 * 1000
+        );
     };
 
     stopExchangeRateAutoRefresh = () => {

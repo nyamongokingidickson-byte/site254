@@ -113,7 +113,12 @@ export class OAuthTokenExchangeService {
             const response = await fetch('/api/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code, code_verifier: codeVerifier, redirect_uri: redirectUrl, client_id: clientId }),
+                body: JSON.stringify({
+                    code,
+                    code_verifier: codeVerifier,
+                    redirect_uri: redirectUrl,
+                    client_id: clientId,
+                }),
             });
 
             const data: TokenExchangeResponse = await response.json();
@@ -188,19 +193,28 @@ export class OAuthTokenExchangeService {
                     } else {
                         console.error('OAuth: No accounts returned after token exchange');
                         this.clearAuthInfo();
-                        return { error: 'no_accounts', error_description: 'No accounts available after authentication' };
+                        return {
+                            error: 'no_accounts',
+                            error_description: 'No accounts available after authentication',
+                        };
                     }
                 } catch (error) {
                     console.error('OAuth: Error fetching accounts after token exchange', error);
                     this.clearAuthInfo();
-                    return { error: 'account_fetch_failed', error_description: error instanceof Error ? error.message : String(error) };
+                    return {
+                        error: 'account_fetch_failed',
+                        error_description: error instanceof Error ? error.message : String(error),
+                    };
                 }
             }
 
             return data;
         } catch (error: unknown) {
             console.error('OAuth: Token exchange network or parsing error', error);
-            return { error: 'network_error', error_description: error instanceof Error ? error.message : 'Unknown error' };
+            return {
+                error: 'network_error',
+                error_description: error instanceof Error ? error.message : 'Unknown error',
+            };
         }
     }
 
@@ -245,7 +259,10 @@ export class OAuthTokenExchangeService {
             return data;
         } catch (error: unknown) {
             console.error('OAuth: Token refresh error', error);
-            return { error: 'network_error', error_description: error instanceof Error ? error.message : 'Unknown error' };
+            return {
+                error: 'network_error',
+                error_description: error instanceof Error ? error.message : 'Unknown error',
+            };
         }
     }
 }

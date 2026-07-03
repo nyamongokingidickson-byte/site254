@@ -89,6 +89,62 @@ All endpoints use the base URL: `/api`
 - **Response**: Array of bot statistics
 - **Usage**: Fetches performance stats for all best bots (auto-refreshes every 30s)
 
+### Get Single Bot Statistics
+
+- **URL**: `/best-bot-stats/{id}`
+- **Method**: `GET`
+- **Response**: Single bot statistics object
+
+### Create or Update Bot Statistics
+
+- **URL**: `/best-bot-stats/{id}`
+- **Method**: `POST`
+- **Body**:
+    ```json
+    {
+      "total_runs": number,
+      "profits": number,
+      "losses": number,
+      "profit_amount": number | null,
+      "loss_amount": number | null
+    }
+    ```
+- **Response**: Updated bot statistics object
+
+## AI Endpoints
+
+### Generate Auto Trade Strategy
+
+- **URL**: `/ai/auto-trade-strategy`
+- **Method**: `POST`
+- **Body**:
+    ```json
+    {
+        "strategyText": "string"
+    }
+    ```
+- **Response**: Auto trade strategy plan object
+- **Usage**: Converts natural-language strategy prompts into executable auto-trade settings for the AI Auto Trades feature
+
+## Exchange Rate Endpoints
+
+### Get USD/KES Exchange Rate
+
+- **URL**: `/exchange-rates/usd-kes`
+- **Method**: `GET`
+- **Response**:
+    ```json
+    {
+      "rate": number,
+      "base": "USD",
+      "quote": "KES",
+      "provider": "string",
+      "updated_at": "ISO timestamp",
+      "cached": boolean
+    }
+    ```
+- **Usage**: Fetches the current USD to KES conversion rate for display and currency calculations
+
 ## Scanner Endpoints
 
 ### Get AI Scanner Signal

@@ -62,14 +62,16 @@ const useTMB = (): UseTMBReturn => {
     const [, setIsApiInitialized] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
     const [isTmbCheckComplete, setIsTmbCheckComplete] = useState(false);
-    const authTokenRef = useRef(((() => {
-        try {
-            const token = OAuthTokenExchangeService.getAccessToken();
-            return token || localStorage.getItem('authToken');
-        } catch (e) {
-            return localStorage.getItem('authToken');
-        }
-    })()));
+    const authTokenRef = useRef(
+        (() => {
+            try {
+                const token = OAuthTokenExchangeService.getAccessToken();
+                return token || localStorage.getItem('authToken');
+            } catch (e) {
+                return localStorage.getItem('authToken');
+            }
+        })()
+    );
     const activeSessionsRef = useRef<TMBWebsocketTokens | undefined>(undefined);
 
     const getActiveSessions = useCallback(async (): Promise<TMBWebsocketTokens | undefined> => {

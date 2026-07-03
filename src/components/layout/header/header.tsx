@@ -197,9 +197,6 @@ const AppHeader = observer(() => {
             ) {
                 return (
                     <div className='auth-actions'>
-                        <Button tertiary type='button' onClick={() => setIsTokenLoginVisible(true)}>
-                            <Localize i18n_default_text='API token' />
-                        </Button>
                         <Button tertiary type='button' onClick={handleLogin}>
                             <Localize i18n_default_text='Log in' />
                         </Button>

@@ -1,5 +1,7 @@
 .mobile-menu {
     height: 100%;
+    position: relative;
+    z-index: 9999;
 
     &__toggle {
         padding-inline-start: 1rem;

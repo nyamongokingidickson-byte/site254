@@ -21,11 +21,7 @@ import {
 import type { AutoTradeStrategyPreset } from './strategy-presets';
 import './auto-trades.scss';
 
-type MartingaleModeType =
-    | 'no_martingale'
-    | 'after_one_loss'
-    | 'after_two_losses'
-    | 'custom_consecutive_loss_trigger';
+type MartingaleModeType = 'no_martingale' | 'after_one_loss' | 'after_two_losses' | 'custom_consecutive_loss_trigger';
 
 type AutoMarket = { symbol: string; label: string; pip: number };
 type Direction = 1 | -1 | 0;
@@ -499,19 +495,32 @@ export const parseAiAutoTradeStrategy = (rawText: string): AiAutoTradeParseResul
         summary.push('Trade type Digit Odd');
     }
 
-    const analysisTicks = getAiNumber(text, [/\b(?:using|use|duration|for)\s*(\d+)\s*ticks?\b/, /\b(\d+)\s*ticks?\b/], 1, 10);
+    const analysisTicks = getAiNumber(
+        text,
+        [/\b(?:using|use|duration|for)\s*(\d+)\s*ticks?\b/, /\b(\d+)\s*ticks?\b/],
+        1,
+        10
+    );
     if (analysisTicks) {
         settings.analysisTicks = analysisTicks;
         summary.push(`${analysisTicks} analysis tick${analysisTicks === '1' ? '' : 's'}`);
     }
 
-    const streak = getAiNumber(text, [/\bstreak\s*(?:of|=|is)?\s*(\d+)\b/, /\b(\d+)\s*(?:match|matches|streak)\b/], 1, 10);
+    const streak = getAiNumber(
+        text,
+        [/\bstreak\s*(?:of|=|is)?\s*(\d+)\b/, /\b(\d+)\s*(?:match|matches|streak)\b/],
+        1,
+        10
+    );
     if (streak) {
         settings.streak = streak;
         summary.push(`Streak ${streak}`);
     }
 
-    const stake = getAiMoney(text, [/\bstake\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/, /\bamount\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/]);
+    const stake = getAiMoney(text, [
+        /\bstake\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/,
+        /\bamount\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/,
+    ]);
     if (stake) {
         settings.stake = stake;
         summary.push(`Stake ${stake}`);
@@ -523,13 +532,19 @@ export const parseAiAutoTradeStrategy = (rawText: string): AiAutoTradeParseResul
         summary.push(`Martingale ${martingale}`);
     }
 
-    const takeProfit = getAiMoney(text, [/\btake\s*profit\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/, /\btp\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/]);
+    const takeProfit = getAiMoney(text, [
+        /\btake\s*profit\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/,
+        /\btp\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/,
+    ]);
     if (takeProfit) {
         settings.takeProfit = takeProfit;
         summary.push(`Take profit ${takeProfit}`);
     }
 
-    const stopLoss = getAiMoney(text, [/\bstop\s*loss\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/, /\bsl\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/]);
+    const stopLoss = getAiMoney(text, [
+        /\bstop\s*loss\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/,
+        /\bsl\s*(?:of|=|is)?\s*(\d+(?:\.\d+)?)\b/,
+    ]);
     if (stopLoss) {
         settings.stopLoss = stopLoss;
         summary.push(`Stop loss ${stopLoss}`);
@@ -663,9 +678,7 @@ export const hasRequiredDigitStreak = ({
 }) => {
     if (digits.length < streak) return false;
 
-    return digits
-        .slice(-streak)
-        .every(digit => isDigitSignalMatch({ trade_type, digit, barrier, inverse }));
+    return digits.slice(-streak).every(digit => isDigitSignalMatch({ trade_type, digit, barrier, inverse }));
 };
 
 const isDirectionMatch = (trade_type: TradeType, direction: Direction) => {
@@ -1486,7 +1499,8 @@ const AutoTrades = observer(() => {
         if (unmountedRef.current || !show_auto_ref.current) return;
         lastUiRefreshAtRef.current = Date.now();
         const highestCooldown = selectedMarketsRef.current.reduce(
-            (maxCooldown, market) => Math.max(maxCooldown, marketStatesRef.current[market.symbol]?.lossCooldownLeft ?? 0),
+            (maxCooldown, market) =>
+                Math.max(maxCooldown, marketStatesRef.current[market.symbol]?.lossCooldownLeft ?? 0),
             0
         );
         setMarketDisplays(
@@ -1675,16 +1689,19 @@ const AutoTrades = observer(() => {
         [run_panel, summary_card, transactions]
     );
 
-    const getActiveDigitBarrier = useCallback((ct: TradeType, lastResult: 'win' | 'loss' | null, consecutiveLosses = 0) => {
-        return getPredictionForLastOutcome({
-            trade_type: ct,
-            last_result: lastResult,
-            consecutive_losses: consecutiveLosses,
-            prediction_before_loss: predictionBeforeLossRef.current,
-            prediction_after_loss: predictionAfterLossRef.current,
-            fallback_barrier: barrierRef.current,
-        });
-    }, []);
+    const getActiveDigitBarrier = useCallback(
+        (ct: TradeType, lastResult: 'win' | 'loss' | null, consecutiveLosses = 0) => {
+            return getPredictionForLastOutcome({
+                trade_type: ct,
+                last_result: lastResult,
+                consecutive_losses: consecutiveLosses,
+                prediction_before_loss: predictionBeforeLossRef.current,
+                prediction_after_loss: predictionAfterLossRef.current,
+                fallback_barrier: barrierRef.current,
+            });
+        },
+        []
+    );
 
     const completeRunPanelStop = useCallback(() => {
         try {
@@ -2006,13 +2023,10 @@ const AutoTrades = observer(() => {
                 });
             const signalReady =
                 strategyModeRef.current === 'PERCENTAGE' && !modeTransitionLockRef.current
-                    ? isPercentageSignalReady(
-                          ct,
-                          state,
-                          activeBarrier
-                      ) &&
-                      (!requiresCandle || candleMatch)
-                    : state.consecutive >= targetLen && riskFilteredDigitStreakReady && (!requiresCandle || candleMatch);
+                    ? isPercentageSignalReady(ct, state, activeBarrier) && (!requiresCandle || candleMatch)
+                    : state.consecutive >= targetLen &&
+                      riskFilteredDigitStreakReady &&
+                      (!requiresCandle || candleMatch);
 
             if (runningRef.current) {
                 const ct = tradeTypeRef.current;
@@ -2026,8 +2040,7 @@ const AutoTrades = observer(() => {
                     digitsStr = `[${dirs.map(d => (d === 1 ? '↑' : d === -1 ? '↓' : '—')).join(', ')}]`;
                     if (inv) {
                         if (ct === 'CALL') condStr = `5m candle bullish + consecutive rising ticks ≥ ${targetLen}`;
-                        else if (ct === 'PUT')
-                            condStr = `5m candle bearish + consecutive falling ticks ≥ ${targetLen}`;
+                        else if (ct === 'PUT') condStr = `5m candle bearish + consecutive falling ticks ≥ ${targetLen}`;
                         else if (ct === 'RUNHIGH')
                             condStr = `5m candle bearish + consecutive rising ticks ≥ ${targetLen}`;
                         else condStr = `5m candle bullish + consecutive falling ticks ≥ ${targetLen}`;
@@ -2539,11 +2552,11 @@ const AutoTrades = observer(() => {
     const martingaleActive = currentStakeDisplay > baseStakeNum;
     const inCooldown = cooldownDisplay > 0;
     const selectedMarketDisplayStates = selectedMarkets.map(
-        market => marketDisplays.find(display => display.symbol === market.symbol) ?? marketStatesRef.current[market.symbol]
+        market =>
+            marketDisplays.find(display => display.symbol === market.symbol) ?? marketStatesRef.current[market.symbol]
     );
     const hasAnyLiveQuote =
-        selectedMarkets.length > 0 &&
-        selectedMarketDisplayStates.some(display => display?.lastQuote !== null);
+        selectedMarkets.length > 0 && selectedMarketDisplayStates.some(display => display?.lastQuote !== null);
     const hasAllLiveQuotes =
         selectedMarkets.length > 0 && selectedMarketDisplayStates.every(display => display?.lastQuote !== null);
     const isDataLoading =
@@ -2629,13 +2642,13 @@ const AutoTrades = observer(() => {
                                     ? `Cooldown ${cooldownDisplay}t`
                                     : isDataLoading
                                       ? 'Loading data'
-                                    : isRunning
-                                      ? 'Trading'
-                                      : isConnected
-                                        ? 'Live data'
-                                        : selectedMarketSymbols.length === 0
-                                          ? 'No markets'
-                                          : 'Connecting…'}
+                                      : isRunning
+                                        ? 'Trading'
+                                        : isConnected
+                                          ? 'Live data'
+                                          : selectedMarketSymbols.length === 0
+                                            ? 'No markets'
+                                            : 'Connecting…'}
                             </span>
                         </div>
                     </div>

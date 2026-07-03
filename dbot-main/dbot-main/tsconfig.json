@@ -8,7 +8,6 @@
         "forceConsistentCasingInFileNames": true,
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
-        "ignoreDeprecations": "6.0",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,

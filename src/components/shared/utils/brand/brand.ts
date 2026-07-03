@@ -42,7 +42,10 @@ const getHostBaseName = (hostname?: string) => {
     let host = hostname || (typeof window !== 'undefined' ? window.location.hostname : config_data.domain_name);
     if (!host) return config_data.brand_name;
 
-    host = host.toLowerCase().split(':')[0].replace(/^www\./, '');
+    host = host
+        .toLowerCase()
+        .split(':')[0]
+        .replace(/^www\./, '');
     const parts = host.split('.');
     let base = parts.length > 2 ? parts[parts.length - 2] : parts[0];
     if (base === 'localhost') return 'localhost';

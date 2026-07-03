@@ -56,16 +56,6 @@
     --brand-font-secondary: Georgia, 'Times New Roman', Times, serif;
     --brand-font-monospace: 'Courier New', Courier, monospace;
 
-    /* Dynamic brand colors (set by brand configuration) */
-    --brand-primary: #ff444f;
-    --brand-secondary: #85acb0;
-    --brand-tertiary: #2a3052;
-    --brand-success: #4bb4b3;
-    --brand-danger: #cc2e3d;
-    --brand-warning: #ffad3a;
-    --brand-info: #377cfc;
-    --brand-neutral: #999;
-
     // App Cards gradient background
     --app-card-virtual: #{constants.$gradient-virtual};
     --app-card-virtual-swap-free: #{constants.$gradient-virtual-swap-free};
@@ -124,11 +114,11 @@
         --button-primary-default: var(--brand-red-coral);
         --button-secondary-default: #{constants.$color-grey-1};
         --button-tertiary-default: transparent;
-        --button-primary-light-default: #{constants.$alpha-color-red-2};
-        --button-primary-hover: #{constants.$color-red-5};
+        --button-primary-light-default: #{constants.$alpha-color-blue-2};
+        --button-primary-hover: #{constants.$color-blue-4};
         --button-secondary-hover: #{constants.$alpha-color-black-3};
-        --button-tertiary-hover: #{constants.$alpha-color-red-1};
-        --button-primary-light-hover: #{constants.$alpha-color-red-3};
+        --button-tertiary-hover: #{constants.$alpha-color-blue-1};
+        --button-primary-light-hover: #{constants.$alpha-color-blue-3};
         --button-toggle-primary: #{constants.$color-blue-3};
         --button-toggle-secondary: #{constants.$color-grey-5};
         --button-toggle-alternate: #{constants.$color-white};
@@ -268,11 +258,11 @@
         --button-primary-default: var(--brand-red-coral);
         --button-secondary-default: #{constants.$color-grey-7};
         --button-tertiary-default: transparent;
-        --button-primary-light-default: #{constants.$alpha-color-red-2};
-        --button-primary-hover: #{constants.$color-red-5};
+        --button-primary-light-default: #{constants.$alpha-color-blue-2};
+        --button-primary-hover: #{constants.$color-blue-4};
         --button-secondary-hover: #{constants.$alpha-color-white-3};
-        --button-tertiary-hover: #{constants.$alpha-color-red-1};
-        --button-primary-light-hover: #{constants.$alpha-color-red-3};
+        --button-tertiary-hover: #{constants.$alpha-color-blue-1};
+        --button-primary-light-hover: #{constants.$alpha-color-blue-3};
         --button-toggle-primary: #{constants.$color-blue-3};
         --button-toggle-secondary: #{constants.$color-black-8};
         --button-toggle-alternate: #{constants.$color-black-8};

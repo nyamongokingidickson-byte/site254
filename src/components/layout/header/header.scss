@@ -312,11 +312,15 @@
 
     button {
         font-weight: 700;
-        margin-inline-end: 1.6rem;
-        border-radius: 4px;
-        height: 3.2rem;
-        min-height: 3.2rem;
-        padding-block: 0;
+        margin-inline-end: 1.2rem;
+        border-radius: 8px !important;
+        height: 3.6rem;
+        min-height: 3.6rem;
+        padding: 0 1.6rem;
+        font-size: 1.3rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: none;
+        letter-spacing: 0.5px;
         color: var(--rm-shell-text) !important;
 
         &:hover {
@@ -326,26 +330,49 @@
 
     .dc-btn--primary,
     .dc-btn--primary__light {
-        background: var(--rm-shell-auth-blue) !important;
-        border: 1px solid var(--rm-shell-auth-blue) !important;
-        color: var(--rm-shell-text) !important;
+        background: linear-gradient(135deg, #00b8ad 0%, #00938a 100%) !important;
+        border: none !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(0, 184, 173, 0.25);
+
+        &:hover {
+            background: linear-gradient(135deg, #00cbbe 0%, #00a49a 100%) !important;
+            box-shadow: 0 6px 16px rgba(0, 184, 173, 0.4);
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
     }
 
     .dc-btn--tertiary {
-        background: var(--rm-shell-auth-blue) !important;
-        border: 1px solid var(--rm-shell-auth-blue) !important;
-        color: var(--rm-shell-text) !important;
-    }
-
-    .dc-btn--tertiary:first-child {
         background: transparent !important;
-        border: 1px solid var(--rm-shell-auth-border) !important;
-        color: var(--rm-shell-text) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+
+        &:hover {
+            border-color: #00b8ad !important;
+            background: rgba(0, 184, 173, 0.1) !important;
+            color: #00b8ad !important;
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
     }
 
     .theme--light & {
-        .dc-btn--tertiary:first-child {
+        .dc-btn--tertiary {
+            border-color: rgba(0, 0, 0, 0.15) !important;
             color: var(--rm-shell-top) !important;
+
+            &:hover {
+                border-color: #00b8ad !important;
+                background: rgba(0, 184, 173, 0.08) !important;
+                color: #00938a !important;
+            }
         }
     }
 

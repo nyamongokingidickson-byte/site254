@@ -15,7 +15,7 @@ The complete backend API server for the Trading Bot Platform has been created an
 - ✅ `server/routes/scanner.js` - 2 endpoints (90 lines)
 - ✅ `package.json` - Dependencies & scripts
 
-### API Endpoints (13 Total)
+### API Endpoints (15 Total)
 
 **Bot Ideas (8)** ✅
 
@@ -36,6 +36,18 @@ DELETE /api/bot-ideas/:id/bot-xml  Detach XML
 GET    /api/best-bot-stats         Top bots
 GET    /api/best-bot-stats/:id     Bot stats
 POST   /api/best-bot-stats/:id     Update stats
+```
+
+**AI Strategy (1)** ✅
+
+```
+POST   /api/ai/auto-trade-strategy  Generate auto-trade strategy plan
+```
+
+**Exchange Rates (1)** ✅
+
+```
+GET    /api/exchange-rates/usd-kes  Get USD/KES exchange rate
 ```
 
 **Scanner (2)** ✅

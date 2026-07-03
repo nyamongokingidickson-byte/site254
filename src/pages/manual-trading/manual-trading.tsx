@@ -1,4 +1,4 @@
- import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -274,7 +274,10 @@ const ManualTrading = observer(() => {
     const latestTick = ticks[ticks.length - 1] ?? null;
     const latestDigit = latestTick ? getLastDigitFromQuote(latestTick.quote, selectedSymbol) : null;
     const digitStats = useMemo(() => calculateDigitStats(ticks, selectedSymbol), [selectedSymbol, ticks]);
-    const specialDigitColorMap = useMemo(() => getSpecialDigitColorMap(digitStats, ticks.length > 0), [digitStats, ticks.length]);
+    const specialDigitColorMap = useMemo(
+        () => getSpecialDigitColorMap(digitStats, ticks.length > 0),
+        [digitStats, ticks.length]
+    );
     const needsBarrier = BARRIER_TRADE_GROUPS.has(tradeGroup);
     const activeActions = TRADE_ACTIONS[tradeGroup];
     const currency = client.currency || 'USD';
@@ -282,7 +285,12 @@ const ManualTrading = observer(() => {
         const stake = Number(stakeInput);
 
         return activeActions.reduce<Record<string, TProposalPreview>>((previews, action) => {
-            previews[action.contractType] = getLocalPayoutPreview(action.contractType, stake, currency, selectedBarrier);
+            previews[action.contractType] = getLocalPayoutPreview(
+                action.contractType,
+                stake,
+                currency,
+                selectedBarrier
+            );
             return previews;
         }, {});
     }, [activeActions, currency, selectedBarrier, stakeInput]);
@@ -669,7 +677,9 @@ const ManualTrading = observer(() => {
         } catch (purchaseError) {
             setTradeMessage('');
             setTradeError(
-                purchaseError instanceof Error ? purchaseError.message : 'Manual Trading could not purchase this contract.'
+                purchaseError instanceof Error
+                    ? purchaseError.message
+                    : 'Manual Trading could not purchase this contract.'
             );
         } finally {
             setIsPurchasing(false);
@@ -746,7 +756,9 @@ const ManualTrading = observer(() => {
                                 >
                                     <div className='manual-trading-digit__inner'>
                                         <span className='manual-trading-digit__number'>{stat.digit}</span>
-                                        <span className='manual-trading-digit__percent'>{stat.percent.toFixed(2)}%</span>
+                                        <span className='manual-trading-digit__percent'>
+                                            {stat.percent.toFixed(2)}%
+                                        </span>
                                     </div>
                                 </div>
                                 {stat.digit === latestDigit && <span className='manual-trading-digit__active-arrow' />}
@@ -826,10 +838,13 @@ const ManualTrading = observer(() => {
 
                 <div className='manual-trading-actions'>
                     {activeActions.map(action => {
-                        const preview = proposalPreviews[action.contractType] ?? localProposalPreviews[action.contractType];
+                        const preview =
+                            proposalPreviews[action.contractType] ?? localProposalPreviews[action.contractType];
                         const payoutLabel = preview.payout;
                         const returnLabel =
-                            preview.status === 'ready' || !isProposalLoading ? preview.returnLabel : `${preview.returnLabel} · quoting`;
+                            preview.status === 'ready' || !isProposalLoading
+                                ? preview.returnLabel
+                                : `${preview.returnLabel} · quoting`;
 
                         return (
                             <button

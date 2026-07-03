@@ -157,12 +157,7 @@ export default class TransactionsStore {
                 const getContractKey = (tx: TTransaction) => {
                     if (tx.type !== transaction_elements.CONTRACT || typeof tx.data !== 'object') return null;
                     const data = tx.data as any;
-                    return (
-                        data.original_transaction_ids?.buy ||
-                        data.transaction_ids?.buy ||
-                        data.contract_id ||
-                        null
-                    );
+                    return data.original_transaction_ids?.buy || data.transaction_ids?.buy || data.contract_id || null;
                 };
 
                 const currentBuyIdMap = new Set<string>();
@@ -213,8 +208,10 @@ export default class TransactionsStore {
 
                     const aData = a.data as TContractInfo;
                     const bData = b.data as TContractInfo;
-                    const aDate = typeof aData.date_start === 'string' ? Date.parse(aData.date_start) : Number(aData.date_start);
-                    const bDate = typeof bData.date_start === 'string' ? Date.parse(bData.date_start) : Number(bData.date_start);
+                    const aDate =
+                        typeof aData.date_start === 'string' ? Date.parse(aData.date_start) : Number(aData.date_start);
+                    const bDate =
+                        typeof bData.date_start === 'string' ? Date.parse(bData.date_start) : Number(bData.date_start);
                     return bDate - aDate;
                 });
                 const cleaned = this.removeConsecutiveDividers(sorted);
@@ -389,11 +386,12 @@ export default class TransactionsStore {
         // If we didn't find a match by transaction IDs, try matching by `contract_id` as a fallback.
         let final_contract_index = same_contract_index;
         if (final_contract_index === -1 && data.contract_id) {
-            final_contract_index = this.elements[current_account]?.findIndex(c => {
-                if (typeof c.data === 'string') return false;
-                if (c.type !== transaction_elements.CONTRACT || !c.data) return false;
-                return (c.data as any).contract_id === data.contract_id;
-            }) ?? -1;
+            final_contract_index =
+                this.elements[current_account]?.findIndex(c => {
+                    if (typeof c.data === 'string') return false;
+                    if (c.type !== transaction_elements.CONTRACT || !c.data) return false;
+                    return (c.data as any).contract_id === data.contract_id;
+                }) ?? -1;
 
             if (final_contract_index !== -1) {
                 console.log(
@@ -491,12 +489,18 @@ export default class TransactionsStore {
             date_start: formatDate(data.date_start, 'YYYY-M-D HH:mm:ss [GMT]'),
             buy_price: data.buy_price || (data as any).stake || (data as any).amount || 0,
             entry_tick:
-                dataAny.entry_tick_display_value || dataAny.entry_spot_display_value || dataAny.entry_tick || dataAny.entry_spot,
+                dataAny.entry_tick_display_value ||
+                dataAny.entry_spot_display_value ||
+                dataAny.entry_tick ||
+                dataAny.entry_spot,
             entry_tick_time:
                 (dataAny.entry_tick_time || dataAny.entry_spot_time) &&
                 formatDate(dataAny.entry_tick_time || dataAny.entry_spot_time, 'YYYY-M-D HH:mm:ss [GMT]'),
             exit_tick:
-                dataAny.exit_tick_display_value || dataAny.exit_spot_display_value || dataAny.exit_tick || dataAny.exit_spot,
+                dataAny.exit_tick_display_value ||
+                dataAny.exit_spot_display_value ||
+                dataAny.exit_tick ||
+                dataAny.exit_spot,
             exit_tick_time:
                 (dataAny.exit_tick_time || dataAny.exit_spot_time) &&
                 formatDate(dataAny.exit_tick_time || dataAny.exit_spot_time, 'YYYY-M-D HH:mm:ss [GMT]'),
@@ -507,7 +511,7 @@ export default class TransactionsStore {
             if (final_contract_index !== -1) {
                 const existing = this.elements[current_account]?.[final_contract_index];
                 if (existing && typeof existing.data === 'object') {
-                        const existing_data = existing.data as any;
+                    const existing_data = existing.data as any;
                     return {
                         ...existing_data,
                         ...incoming_contract,
@@ -515,19 +519,31 @@ export default class TransactionsStore {
                         original_transaction_ids:
                             existing_data.original_transaction_ids || incoming_contract.original_transaction_ids,
                         normalized_transaction_ids:
-                            existing_data.normalized_transaction_ids || (incoming_contract as any).normalized_transaction_ids,
+                            existing_data.normalized_transaction_ids ||
+                            (incoming_contract as any).normalized_transaction_ids,
                         buy_price:
-                            incoming_contract.buy_price || existing_data.buy_price || existing_data.stake || existing_data.amount || 0,
+                            incoming_contract.buy_price ||
+                            existing_data.buy_price ||
+                            existing_data.stake ||
+                            existing_data.amount ||
+                            0,
                         profit:
-                            incoming_contract.profit ?? existing_data.profit ?? existing_data.margin ?? existing_data.payout ?? 0,
+                            incoming_contract.profit ??
+                            existing_data.profit ??
+                            existing_data.margin ??
+                            existing_data.payout ??
+                            0,
                         entry_tick:
                             incoming_contract.entry_tick || existing_data.entry_tick || existing_data.entry_spot,
-                        exit_tick:
-                            incoming_contract.exit_tick || existing_data.exit_tick || existing_data.exit_spot,
+                        exit_tick: incoming_contract.exit_tick || existing_data.exit_tick || existing_data.exit_spot,
                         entry_tick_time:
-                            incoming_contract.entry_tick_time || existing_data.entry_tick_time || existing_data.entry_spot_time,
+                            incoming_contract.entry_tick_time ||
+                            existing_data.entry_tick_time ||
+                            existing_data.entry_spot_time,
                         exit_tick_time:
-                            incoming_contract.exit_tick_time || existing_data.exit_tick_time || existing_data.exit_spot_time,
+                            incoming_contract.exit_tick_time ||
+                            existing_data.exit_tick_time ||
+                            existing_data.exit_spot_time,
                     };
                 }
             }

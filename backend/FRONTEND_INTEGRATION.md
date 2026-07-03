@@ -49,6 +49,19 @@ export const scannerAPI = {
 export const statsAPI = {
     getAll: () => fetch(`${API_BASE_URL}/best-bot-stats`).then(r => r.json()),
 };
+
+export const aiAPI = {
+    generateStrategy: (strategyText: string) =>
+        fetch(`${API_BASE_URL}/ai/auto-trade-strategy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ strategyText }),
+        }).then(r => r.json()),
+};
+
+export const exchangeRatesAPI = {
+    getUsdKes: () => fetch(`${API_BASE_URL}/exchange-rates/usd-kes`).then(r => r.json()),
+};
 ```
 
 ## Step 3: Update Page Components

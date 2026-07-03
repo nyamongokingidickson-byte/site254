@@ -123,11 +123,11 @@ export class WebSocketSessionManager {
                         resolve();
                     };
 
-                    this.ws.onmessage = (event) => {
+                    this.ws.onmessage = event => {
                         this.handleMessage(JSON.parse(event.data));
                     };
 
-                    this.ws.onerror = (error) => {
+                    this.ws.onerror = error => {
                         console.error('[WS] Connection error:', error);
                         this.isConnecting = false;
                         if (this.onError) {
@@ -170,7 +170,7 @@ export class WebSocketSessionManager {
             this.ws = null;
         }
         // Clear all pending requests
-        this.pendingRequests.forEach((req) => {
+        this.pendingRequests.forEach(req => {
             clearTimeout(req.timeout);
             req.reject(new Error('WebSocket disconnected'));
         });
@@ -353,9 +353,7 @@ export class WebSocketSessionManager {
  */
 export const wsManagers: Map<string, WebSocketSessionManager> = new Map();
 
-export async function getOrCreateWebSocketManager(
-    config: WebSocketSessionRequest
-): Promise<WebSocketSessionManager> {
+export async function getOrCreateWebSocketManager(config: WebSocketSessionRequest): Promise<WebSocketSessionManager> {
     const key = `${config.account_type}_${config.account_id}`;
 
     if (wsManagers.has(key)) {
@@ -383,7 +381,7 @@ export function disconnectWebSocketManager(accountType: 'dot' | 'rot', accountId
 }
 
 export function disconnectAllWebSockets(): void {
-    wsManagers.forEach((manager) => {
+    wsManagers.forEach(manager => {
         manager.disconnect();
     });
     wsManagers.clear();

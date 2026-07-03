@@ -107,10 +107,7 @@ export const OAUTH_ERRORS = {
 /**
  * Parse OAuth error from various sources
  */
-export function parseOAuthError(
-    error: any,
-    defaultAction: string = 'retry_login'
-): OAuthError {
+export function parseOAuthError(error: any, defaultAction: string = 'retry_login'): OAuthError {
     // Handle error object
     if (typeof error === 'object' && error !== null) {
         const errorKey = error.error?.toUpperCase().replace(/-/g, '_') || error.code?.toUpperCase();
@@ -243,7 +240,10 @@ export function validateOAuthResponse(params: Record<string, string>): {
 /**
  * Validate PKCE parameters
  */
-export function validatePKCEParameters(verifier: string, challenge: string): {
+export function validatePKCEParameters(
+    verifier: string,
+    challenge: string
+): {
     valid: boolean;
     error?: string;
 } {

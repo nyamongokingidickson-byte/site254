@@ -26,7 +26,7 @@ deriv-bot-backend/
 └── render.yaml               # Render configuration
 ```
 
-## 🔌 API Endpoints (11 Total)
+## 🔌 API Endpoints (15 Total)
 
 ### Bot Ideas (8)
 
@@ -44,6 +44,14 @@ deriv-bot-backend/
 ✅ GET `/api/best-bot-stats`
 ✅ GET `/api/best-bot-stats/:botId`
 ✅ POST `/api/best-bot-stats/:botId`
+
+### AI Strategy (1)
+
+✅ POST `/api/ai/auto-trade-strategy`
+
+### Exchange Rates (1)
+
+✅ GET `/api/exchange-rates/usd-kes`
 
 ### Scanner (2)
 

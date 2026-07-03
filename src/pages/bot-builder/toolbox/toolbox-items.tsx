@@ -53,6 +53,14 @@ const Xml = ({ ...props }) => {
 export const ToolboxItems = () =>
     ReactDomServer.renderToStaticMarkup(
         <Xml xmlns='http://www.w3.org/1999/xhtml' id='toolbox'>
+            <Category id='analysis_logics' name={localize('Analysis Logics 🔥')}>
+                <Block type='last_digits_condition' />
+                <Block type='digit_frequency' />
+                <Block type='even_odd_percent' />
+                <Block type='over_under_percent' />
+                <Block type='match_diff_percent' />
+                <Block type='rise_fall_percent' />
+            </Category>
             <Category id='trade_parameters' name={localize('Trade parameters')}>
                 <Block type='trade_definition'>
                     <Statement name='TRADE_OPTIONS'>
@@ -88,6 +96,18 @@ export const ToolboxItems = () =>
                                                                     movable='false'
                                                                 >
                                                                     <Field name='RESTARTONERROR'>TRUE</Field>
+                                                                    <Next>
+                                                                        <Block
+                                                                            type='trade_definition_alternate_markets'
+                                                                            deletable='false'
+                                                                            movable='false'
+                                                                        >
+                                                                            <Field name='ALT_MARKETS_ENABLED'>
+                                                                                FALSE
+                                                                            </Field>
+                                                                            <Field name='ALT_MARKETS_EVERY'>1</Field>
+                                                                        </Block>
+                                                                    </Next>
                                                                 </Block>
                                                             </Next>
                                                         </Block>
@@ -507,6 +527,19 @@ export const ToolboxItems = () =>
                             </Shadow>
                         </Value>
                     </Block>
+                    <Block type='math_minmax'>
+                        <Field name='OP'>MIN</Field>
+                        <Value name='A'>
+                            <Shadow type='math_number'>
+                                <Field name='NUM'>0</Field>
+                            </Shadow>
+                        </Value>
+                        <Value name='B'>
+                            <Shadow type='math_number'>
+                                <Field name='NUM'>0</Field>
+                            </Shadow>
+                        </Value>
+                    </Block>
                     <Block type='math_single'>
                         <Field name='OP'>ROOT</Field>
                         <Value name='NUM'>
@@ -779,6 +812,41 @@ export const ToolboxItems = () =>
                 </Category>
             </Category>
 
+            <Category id='virtual_hook' name={localize('Virtual Hook Switcher')}>
+                <Block type='vh_settings' />
+                <Block type='vh_toggle' />
+            </Category>
+
+            <Category id='binarytools' name={localize('Binarytools')}>
+                <Block type='tool_binarytools'>
+                    <Field name='COLOR'>green</Field>
+                    <Field name='SOUND'>silent</Field>
+                    <Field name='NAME'>Binarytool</Field>
+                </Block>
+            </Category>
+
+            <Category name={localize('Contract modifiers')} id='contract_modifiers'>
+                <Block type='contract_type_switcher'>
+                    <Field name='STATUS'>DISABLE</Field>
+                </Block>
+                <Block type='custom_prediction_setter'>
+                    <Field name='PRED'>1</Field>
+                </Block>
+                <Block type='market_symbol_changer'>
+                    <Field name='STATUS'>DISABLE</Field>
+                </Block>
+            </Category>
+
+            <Category name={localize('Barrier Settings')} id='barrier_settings_category'>
+                <Block type='barrier_settings' />
+                <Block type='touchnotouch_offset_enabler'>
+                    <Field name='STATUS'>disable</Field>
+                </Block>
+                <Block type='touchnotouch_barrier_changer'>
+                    <Field name='VALUE'>abc</Field>
+                </Block>
+            </Category>
+
             <Examples id='examples'>
                 <Example id='sell_available'>
                     <Block type='during_purchase'>
@@ -933,190 +1001,25 @@ export const ToolboxItems = () =>
                             candle_list
                         </Field>
                         <Value name='VALUE'>
-                            <Block type='ohlc_values'>
-                                <Field name='OHLCFIELD_LIST'>open</Field>
-                                <Field name='CANDLEINTERVAL_LIST'>default</Field>
-                            </Block>
-                        </Value>
-                    </Block>
-                </Example>
-                <Example id='candle_list_1'>
-                    <Block type='variables_set'>
-                        <Field name='VAR' variabletype=''>
-                            cl
-                        </Field>
-                        <Value name='VALUE'>
                             <Block type='ohlc_values_in_list'>
                                 <Field name='OHLCFIELD_LIST'>open</Field>
-                                <Value name='OHLCLIST'>
-                                    <Block type='ohlc'>
-                                        <Field name='CANDLEINTERVAL_LIST'>default</Field>
-                                    </Block>
-                                </Value>
-                            </Block>
-                        </Value>
-                    </Block>
-                </Example>
-                <Example id='get_candle'>
-                    <Block type='variables_set'>
-                        <Field name='VAR' variabletype=''>
-                            candle_open_price
-                        </Field>
-                        <Value name='VALUE'>
-                            <Block type='read_ohlc_obj'>
-                                <Field name='OHLCFIELD_LIST'>epoch</Field>
-                                <Value name='OHLCOBJ'>
-                                    <Block type='get_ohlc'>
-                                        <Field name='CANDLEINTERVAL_LIST'>default</Field>
-                                        <Value name='CANDLEINDEX'>
-                                            <Shadow type='math_number'>
-                                                <Field name='NUM'>2</Field>
-                                            </Shadow>
-                                        </Value>
-                                    </Block>
-                                </Value>
-                            </Block>
-                        </Value>
-                    </Block>
-                </Example>
-                <Example id='check_result'>
-                    <Block type='after_purchase'>
-                        <Statement name='AFTERPURCHASE_STACK'>
-                            <Block type='controls_if'>
-                                <Value name='IF0'>
-                                    <Block type='contract_check_result'>
-                                        <Field name='CHECK_RESULT'>win</Field>
-                                    </Block>
-                                </Value>
-                                <Statement name='DO0'>
-                                    <Block type='trade_again' />
-                                </Statement>
-                            </Block>
-                        </Statement>
-                    </Block>
-                </Example>
-                <Example id='sell_pl'>
-                    <Block type='during_purchase'>
-                        <Statement name='DURING_PURCHASE_STACK'>
-                            <Block type='controls_if'>
-                                <Value name='IF0'>
-                                    <Block type='check_sell' />
-                                </Value>
-                                <Statement name='DO0'>
-                                    <Block type='controls_if'>
-                                        <Value name='IF0'>
-                                            <Block type='logic_compare'>
-                                                <Field name='OP'>EQ</Field>
-                                                <Value name='A'>
-                                                    <Block type='sell_price' />
-                                                </Value>
-                                                <Value name='B'>
-                                                    <Block type='variables_get'>
-                                                        <Field name='VAR' variabletype=''>
-                                                            stake
-                                                        </Field>
-                                                    </Block>
-                                                </Value>
-                                            </Block>
-                                        </Value>
-                                        <Statement name='DO0'>
-                                            <Block type='sell_at_market' />
-                                        </Statement>
-                                    </Block>
-                                </Statement>
-                            </Block>
-                        </Statement>
-                    </Block>
-                </Example>
-                <Example id='if-return'>
-                    <Block type='procedures_defreturn'>
-                        <Mutation>
-                            <Arg name='x' />
-                        </Mutation>
-                        <Field name='NAME'>do something</Field>
-                        <Statement name='STACK'>
-                            <Block type='procedures_ifreturn'>
-                                <Mutation value='1' />
-                                <Value name='CONDITION'>
-                                    <Block type='logic_compare'>
-                                        <Field name='OP'>EQ</Field>
-                                        <Value name='A'>
-                                            <Block type='variables_get'>
-                                                <Field name='VAR' variabletype=''>
-                                                    x
-                                                </Field>
-                                            </Block>
-                                        </Value>
-                                        <Value name='B'>
-                                            <Block type='variables_get'>
-                                                <Field name='VAR' variabletype=''>
-                                                    x
-                                                </Field>
-                                            </Block>
-                                        </Value>
-                                    </Block>
-                                </Value>
-                                <Value name='VALUE'>
-                                    <Block type='text'>
-                                        <Field name='TEXT'>x must be positive or zero</Field>
-                                    </Block>
-                                </Value>
-                            </Block>
-                        </Statement>
-                        <Value name='RETURN'>
-                            <Block type='math_single'>
-                                <Field name='OP'>ROOT</Field>
-                                <Value name='NUM'>
-                                    <Shadow type='math_number'>
-                                        <Field name='NUM'>9</Field>
+                                <Field name='CANDLEINTERVAL_LIST'>default</Field>
+                                <Value name='CANDLESCOPE'>
+                                    <Shadow type='math_number_positive'>
+                                        <Field name='NUM'>20</Field>
                                     </Shadow>
-                                    <Block type='variables_get'>
-                                        <Field name='VAR' variabletype=''>
-                                            x
-                                        </Field>
-                                    </Block>
                                 </Value>
                             </Block>
                         </Value>
                     </Block>
                 </Example>
-                <Example id='notify_telegram'>
-                    <Block type='notify_telegram'>
-                        <Value name='TELEGRAM_ACCESS_TOKEN'>
-                            <Shadow type='text'>
-                                <Field name='TEXT' />
-                            </Shadow>
-                            <Block type='variables_get'>
-                                <Field name='VAR' variabletype=''>
-                                    access_token
-                                </Field>
-                            </Block>
-                        </Value>
-                        <Value name='TELEGRAM_CHAT_ID'>
-                            <Shadow type='text'>
-                                <Field name='TEXT' />
-                            </Shadow>
-                            <Block type='variables_get'>
-                                <Field name='VAR' variabletype=''>
-                                    chat_id
-                                </Field>
-                            </Block>
-                        </Value>
-                        <Value name='TELEGRAM_MESSAGE'>
-                            <Shadow type='text'>
-                                <Field name='TEXT'>Enjoy!</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                </Example>
-                <Example id='epoch'>
+                <Example id='get_ticks'>
                     <Block type='variables_set'>
                         <Field name='VAR' variabletype=''>
-                            candle
+                            ticks
                         </Field>
                         <Value name='VALUE'>
-                            <Block type='read_ohlc'>
-                                <Field name='OHLCFIELD_LIST'>open</Field>
+                            <Block type='get_ohlc'>
                                 <Field name='CANDLEINTERVAL_LIST'>default</Field>
                                 <Value name='CANDLEINDEX'>
                                     <Shadow type='math_number'>
@@ -1125,533 +1028,173 @@ export const ToolboxItems = () =>
                                 </Value>
                             </Block>
                         </Value>
-                        <Next>
-                            <Block type='variables_set'>
-                                <Field name='VAR' variabletype=''>
-                                    Open Time
-                                </Field>
+                    </Block>
+                </Example>
+                <Example id='tick_array'>
+                    <Block type='variables_set'>
+                        <Field name='VAR' variabletype=''>
+                            tick_list
+                        </Field>
+                        <Value name='VALUE'>
+                            <Block type='ticks' />
+                        </Value>
+                    </Block>
+                </Example>
+                <Example id='list_get_index'>
+                    <Block type='variables_set'>
+                        <Field name='VAR' variabletype=''>
+                            op
+                        </Field>
+                        <Value name='VALUE'>
+                            <Block type='lists_getIndex'>
+                                <Mutation statement='false' at='true' />
+                                <Field name='MODE'>GET</Field>
+                                <Field name='WHERE'>FROM_START</Field>
                                 <Value name='VALUE'>
-                                    <Block type='read_ohlc_obj'>
-                                        <Field name='OHLCFIELD_LIST'>epoch</Field>
-                                        <Value name='OHLCOBJ'>
-                                            <Block type='variables_get'>
-                                                <Field name='VAR' variabletype=''>
-                                                    candle
-                                                </Field>
-                                            </Block>
-                                        </Value>
-                                    </Block>
-                                </Value>
-                                <Next>
-                                    <Block type='variables_set'>
+                                    <Block type='variables_get'>
                                         <Field name='VAR' variabletype=''>
-                                            Open Time
+                                            candle_list
                                         </Field>
-                                        <Value name='VALUE'>
-                                            <Block type='math_arithmetic'>
-                                                <Field name='OP'>MINUS</Field>
-                                                <Value name='A'>
-                                                    <Shadow type='math_number'>
-                                                        <Field name='NUM'>1</Field>
-                                                    </Shadow>
-                                                    <Block type='epoch' />
-                                                </Value>
-                                                <Value name='B'>
-                                                    <Shadow type='math_number'>
-                                                        <Field name='NUM'>1</Field>
-                                                    </Shadow>
-                                                    <Block type='variables_get'>
-                                                        <Field name='VAR' variabletype=''>
-                                                            Open Time
-                                                        </Field>
-                                                    </Block>
-                                                </Value>
-                                            </Block>
-                                        </Value>
-                                        <Next>
-                                            <Block type='controls_if'>
-                                                <Value name='IF0'>
-                                                    <Block type='logic_compare'>
-                                                        <Field name='OP'>GTE</Field>
-                                                        <Value name='A'>
-                                                            <Block type='variables_get'>
-                                                                <Field name='VAR' variabletype=''>
-                                                                    Time Since Candle Opened
-                                                                </Field>
-                                                            </Block>
-                                                        </Value>
-                                                        <Value name='B'>
-                                                            <Block type='math_number'>
-                                                                <Field name='NUM'>30</Field>
-                                                            </Block>
-                                                        </Value>
-                                                    </Block>
-                                                </Value>
-                                            </Block>
-                                        </Next>
-                                    </Block>
-                                </Next>
-                            </Block>
-                        </Next>
-                    </Block>
-                </Example>
-                <Example id='totimestamp'>
-                    <Block type='before_purchase'>
-                        <Statement name='BEFOREPURCHASE_STACK'>
-                            <Block type='controls_if'>
-                                <Value name='IF0'>
-                                    <Block type='logic_compare'>
-                                        <Field name='OP'>EQ</Field>
-                                        <Value name='A'>
-                                            <Block type='epoch' />
-                                        </Value>
-                                        <Value name='B'>
-                                            <Block type='totimestamp'>
-                                                <Value name='DATETIME'>
-                                                    <Shadow type='text'>
-                                                        <Field name='TEXT'>1957-08-31 00:00:00</Field>
-                                                    </Shadow>
-                                                </Value>
-                                            </Block>
-                                        </Value>
                                     </Block>
                                 </Value>
-                                <Statement name='DO0'>
-                                    <Block type='purchase'>
-                                        <Field name='PURCHASE_LIST'>CALL</Field>
-                                    </Block>
-                                </Statement>
-                            </Block>
-                        </Statement>
-                    </Block>
-                </Example>
-                <Example id='todatetime'>
-                    <Block type='notify'>
-                        <Field name='NOTIFICATION_TYPE'>success</Field>
-                        <Field name='NOTIFICATION_SOUND'>silent</Field>
-                        <Value name='MESSAGE'>
-                            <Shadow type='text'>
-                                <Field name='TEXT'>abc</Field>
-                            </Shadow>
-                            <Block type='todatetime'>
-                                <Value name='TIMESTAMP'>
-                                    <Shadow type='math_number'>
-                                        <Field name='NUM'>0</Field>
+                                <Value name='AT'>
+                                    <Shadow type='math_number_positive'>
+                                        <Field name='NUM'>1</Field>
                                     </Shadow>
-                                    <Block type='epoch' />
                                 </Value>
                             </Block>
                         </Value>
                     </Block>
                 </Example>
-                <Example id='constrain'>
-                    <Block type='math_constrain'>
-                        <Value name='VALUE'>
-                            <Block type='math_number'>
+                <Example id='tick_analysis_example'>
+                    <Block type='tick_analysis'>
+                        <Value name='NUMTICKS'>
+                            <Shadow type='math_number'>
                                 <Field name='NUM'>5</Field>
-                            </Block>
-                        </Value>
-                        <Value name='LOW'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>10</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='HIGH'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>20</Field>
                             </Shadow>
                         </Value>
                     </Block>
                 </Example>
-                <Example id='controls_if'>
-                    <Block type='controls_if'>
-                        <Mutation elseif='1' else='1' />
-                        <Value name='IF0'>
-                            <Block type='logic_compare'>
-                                <Field name='OP'>EQ</Field>
-                                <Value name='A'>
-                                    <Block type='variables_get'>
-                                        <Field name='VAR' variabletype=''>
-                                            var1
-                                        </Field>
-                                    </Block>
-                                </Value>
-                                <Value name='B'>
-                                    <Block type='variables_get'>
-                                        <Field name='VAR' variabletype=''>
-                                            var2
-                                        </Field>
-                                    </Block>
-                                </Value>
-                            </Block>
-                        </Value>
-                        <Value name='IF1'>
-                            <Block type='logic_compare'>
-                                <Field name='OP'>EQ</Field>
-                                <Value name='A'>
-                                    <Block type='variables_get'>
-                                        <Field name='VAR' variabletype=''>
-                                            var3
-                                        </Field>
-                                    </Block>
-                                </Value>
-                                <Value name='B'>
-                                    <Block type='variables_get'>
-                                        <Field name='VAR' variabletype=''>
-                                            var4
-                                        </Field>
-                                    </Block>
-                                </Value>
-                            </Block>
-                        </Value>
-                    </Block>
-                </Example>
-                <Example id='compare_logic'>
-                    <Block type='logic_compare'>
-                        <Field name='OP'>EQ</Field>
-                    </Block>
-                </Example>
-                <Example id='compare_logic_1'>
-                    <Block type='logic_operation'>
-                        <Field name='OP'>AND</Field>
-                    </Block>
-                </Example>
-                <Example id='repeat_while'>
+                <Example id='list_of_digits'>
                     <Block type='variables_set'>
                         <Field name='VAR' variabletype=''>
-                            x
+                            digits
                         </Field>
                         <Value name='VALUE'>
-                            <Block type='math_number'>
-                                <Field name='NUM'>0</Field>
-                            </Block>
+                            <Block type='lastDigitList' />
                         </Value>
-                        <Next>
-                            <Block type='controls_whileUntil'>
-                                <Field name='MODE'>WHILE</Field>
-                                <Value name='BOOL'>
-                                    <Block type='logic_compare'>
-                                        <Field name='OP'>LTE</Field>
-                                        <Value name='A'>
-                                            <Block type='variables_get'>
-                                                <Field name='VAR' variabletype=''>
-                                                    x
-                                                </Field>
-                                            </Block>
-                                        </Value>
-                                        <Value name='B'>
-                                            <Block type='math_number'>
-                                                <Field name='NUM'>10</Field>
-                                            </Block>
-                                        </Value>
-                                    </Block>
-                                </Value>
-                                <Statement name='DO'>
-                                    <Block type='math_change'>
-                                        <Field name='VAR' variabletype=''>
-                                            x
-                                        </Field>
-                                        <Value name='DELTA'>
-                                            <Shadow type='math_number'>
-                                                <Field name='NUM'>1</Field>
-                                            </Shadow>
-                                        </Value>
-                                        <Next>
-                                            <Block type='notify'>
-                                                <Field name='NOTIFICATION_TYPE'>success</Field>
-                                                <Field name='NOTIFICATION_SOUND'>silent</Field>
-                                                <Value name='MESSAGE'>
-                                                    <Shadow type='text'>
-                                                        <Field name='TEXT'>abc</Field>
-                                                    </Shadow>
-                                                    <Block type='variables_get'>
-                                                        <Field name='VAR' variabletype=''>
-                                                            x
-                                                        </Field>
-                                                    </Block>
-                                                </Value>
-                                            </Block>
-                                        </Next>
-                                    </Block>
-                                </Statement>
-                            </Block>
-                        </Next>
                     </Block>
                 </Example>
-                <Example id='repeat_until'>
+                <Example id='total_profit'>
                     <Block type='variables_set'>
                         <Field name='VAR' variabletype=''>
-                            x
+                            profit
                         </Field>
                         <Value name='VALUE'>
-                            <Block type='math_number'>
-                                <Field name='NUM'>20</Field>
-                            </Block>
+                            <Block type='total_profit' />
                         </Value>
-                        <Next>
-                            <Block type='controls_whileUntil'>
-                                <Field name='MODE'>UNTIL</Field>
-                                <Value name='BOOL'>
-                                    <Block type='logic_compare'>
-                                        <Field name='OP'>EQ</Field>
-                                        <Value name='A'>
-                                            <Block type='variables_get'>
-                                                <Field name='VAR' variabletype=''>
-                                                    x
-                                                </Field>
-                                            </Block>
-                                        </Value>
-                                        <Value name='B'>
-                                            <Block type='math_number'>
-                                                <Field name='NUM'>10</Field>
-                                            </Block>
-                                        </Value>
-                                    </Block>
-                                </Value>
-                                <Statement name='DO'>
-                                    <Block type='math_change'>
-                                        <Field name='VAR' variabletype=''>
-                                            x
-                                        </Field>
-                                        <Value name='DELTA'>
-                                            <Shadow type='math_number'>
-                                                <Field name='NUM'>-1</Field>
-                                            </Shadow>
-                                        </Value>
-                                        <Next>
-                                            <Block type='notify'>
-                                                <Field name='NOTIFICATION_TYPE'>success</Field>
-                                                <Field name='NOTIFICATION_SOUND'>silent</Field>
-                                                <Value name='MESSAGE'>
-                                                    <Shadow type='text'>
-                                                        <Field name='TEXT'>abc</Field>
-                                                    </Shadow>
-                                                    <Block type='variables_get'>
-                                                        <Field name='VAR' variabletype=''>
-                                                            x
-                                                        </Field>
-                                                    </Block>
-                                                </Value>
-                                            </Block>
-                                        </Next>
-                                    </Block>
-                                </Statement>
-                            </Block>
-                        </Next>
                     </Block>
                 </Example>
-                <Example id='controls_for'>
-                    <Block type='controls_for'>
+                <Example id='ticks_list'>
+                    <Block type='variables_set'>
                         <Field name='VAR' variabletype=''>
-                            i
+                            ticks
                         </Field>
-                        <Value name='FROM'>
-                            <Block type='math_number'>
-                                <Field name='NUM'>0</Field>
+                        <Value name='VALUE'>
+                            <Block type='stat_list'>
+                                <Field name='TYPE'>last</Field>
                             </Block>
                         </Value>
-                        <Value name='TO'>
-                            <Block type='math_number'>
-                                <Field name='NUM'>10</Field>
-                            </Block>
-                        </Value>
-                        <Value name='BY'>
-                            <Block type='math_number'>
-                                <Field name='NUM'>2</Field>
-                            </Block>
-                        </Value>
-                        <Statement name='DO'>
-                            <Block type='notify'>
-                                <Field name='NOTIFICATION_TYPE'>success</Field>
-                                <Field name='NOTIFICATION_SOUND'>silent</Field>
-                                <Value name='MESSAGE'>
-                                    <Shadow type='text'>
-                                        <Field name='TEXT'>abc</Field>
-                                    </Shadow>
-                                    <Block type='variables_get'>
-                                        <Field name='VAR' variabletype=''>
-                                            i
-                                        </Field>
-                                    </Block>
-                                </Value>
-                            </Block>
-                        </Statement>
                     </Block>
                 </Example>
-                <Example id='controls_forEach'>
-                    <Block type='lists_create_with'>
-                        <Field name='VARIABLE'>list</Field>
-                        <Statement name='STACK'>
-                            <Block type='lists_statement'>
-                                <Value name='VALUE'>
-                                    <Block type='variables_get'>
-                                        <Field name='VAR' variabletype=''>
-                                            item1
-                                        </Field>
+                <Example id='read_ohlc_obj'>
+                    <Block type='variables_set'>
+                        <Field name='VAR' variabletype=''>
+                            candle
+                        </Field>
+                        <Value name='VALUE'>
+                            <Block type='read_ohlc_obj'>
+                                <Field name='OHLCFIELD_LIST'>open</Field>
+                                <Value name='OHLCOBJ'>
+                                    <Block type='ohlc'>
+                                        <Field name='OHLCFIELD_LIST'>open</Field>
                                     </Block>
                                 </Value>
+                            </Block>
+                        </Value>
+                    </Block>
+                </Example>
+                <Example id='ohlc'>
+                    <Block type='variables_set'>
+                        <Field name='VAR' variabletype=''>
+                            candle
+                        </Field>
+                        <Value name='VALUE'>
+                            <Block type='ohlc'>
+                                <Field name='OHLCFIELD_LIST'>open</Field>
+                            </Block>
+                        </Value>
+                    </Block>
+                </Example>
+                <Example id='trade_definition_alternate_markets'>
+                    <Block type='trade_definition'>
+                        <Statement name='TRADE_OPTIONS'>
+                            <Block type='trade_definition_market' deletable='false' movable='false'>
+                                <Field name='MARKET_LIST' />
+                                <Field name='SUBMARKET_LIST' />
+                                <Field name='SYMBOL_LIST' />
                                 <Next>
-                                    <Block type='lists_statement'>
-                                        <Value name='VALUE'>
-                                            <Block type='variables_get'>
-                                                <Field name='VAR' variabletype=''>
-                                                    item2
-                                                </Field>
-                                            </Block>
-                                        </Value>
+                                    <Block type='trade_definition_tradetype' deletable='false' movable='false'>
+                                        <Field name='TRADETYPECAT_LIST' />
+                                        <Field name='TRADETYPE_LIST' />
                                         <Next>
-                                            <Block type='lists_statement'>
-                                                <Value name='VALUE'>
-                                                    <Block type='variables_get'>
-                                                        <Field name='VAR' variabletype=''>
-                                                            item3
-                                                        </Field>
-                                                    </Block>
-                                                </Value>
-                                            </Block>
-                                        </Next>
-                                    </Block>
-                                </Next>
-                            </Block>
-                        </Statement>
-                        <Next>
-                            <Block type='controls_forEach'>
-                                <Field name='VAR' variabletype=''>
-                                    i
-                                </Field>
-                                <Value name='LIST'>
-                                    <Block type='variables_get'>
-                                        <Field name='VAR' variabletype=''>
-                                            list
-                                        </Field>
-                                    </Block>
-                                </Value>
-                                <Statement name='DO'>
-                                    <Block type='notify'>
-                                        <Field name='NOTIFICATION_TYPE'>success</Field>
-                                        <Field name='NOTIFICATION_SOUND'>silent</Field>
-                                        <Value name='MESSAGE'>
-                                            <Shadow type='text'>
-                                                <Field name='TEXT'>abc</Field>
-                                            </Shadow>
-                                            <Block type='variables_get'>
-                                                <Field name='VAR' variabletype=''>
-                                                    i
-                                                </Field>
-                                            </Block>
-                                        </Value>
-                                    </Block>
-                                </Statement>
-                            </Block>
-                        </Next>
-                    </Block>
-                </Example>
-                <Example id='break_out'>
-                    <Block type='variables_set'>
-                        <Field name='VAR' variabletype=''>
-                            x
-                        </Field>
-                        <Value name='VALUE'>
-                            <Block type='logic_boolean'>
-                                <Field name='BOOL'>TRUE</Field>
-                            </Block>
-                        </Value>
-                        <Next>
-                            <Block type='controls_repeat'>
-                                <Field name='TIMES'>10</Field>
-                                <Statement name='DO'>
-                                    <Block type='controls_if'>
-                                        <Value name='IF0'>
-                                            <Block type='logic_negate'>
-                                                <Value name='BOOL'>
-                                                    <Block type='variables_get'>
-                                                        <Field name='VAR' variabletype=''>
-                                                            x
-                                                        </Field>
-                                                    </Block>
-                                                </Value>
-                                            </Block>
-                                        </Value>
-                                        <Statement name='DO0'>
-                                            <Block type='controls_flow_statements'>
-                                                <Field name='FLOW'>BREAK</Field>
-                                            </Block>
-                                        </Statement>
-                                        <Next>
-                                            <Block type='notify'>
-                                                <Field name='NOTIFICATION_TYPE'>success</Field>
-                                                <Field name='NOTIFICATION_SOUND'>silent</Field>
-                                                <Value name='MESSAGE'>
-                                                    <Shadow type='text'>
-                                                        <Field name='TEXT'>abc</Field>
-                                                    </Shadow>
-                                                </Value>
-                                            </Block>
-                                        </Next>
-                                    </Block>
-                                </Statement>
-                            </Block>
-                        </Next>
-                    </Block>
-                </Example>
-                <Example id='continue'>
-                    <Block type='variables_set'>
-                        <Field name='VAR' variabletype=''>
-                            x
-                        </Field>
-                        <Value name='VALUE'>
-                            <Block type='logic_boolean'>
-                                <Field name='BOOL'>FALSE</Field>
-                            </Block>
-                        </Value>
-                        <Next>
-                            <Block type='controls_repeat'>
-                                <Field name='TIMES'>10</Field>
-                                <Statement name='DO'>
-                                    <Block type='controls_if'>
-                                        <Value name='IF0'>
-                                            <Block type='logic_negate'>
-                                                <Value name='BOOL'>
-                                                    <Block type='variables_get'>
-                                                        <Field name='VAR' variabletype=''>
-                                                            x
-                                                        </Field>
-                                                    </Block>
-                                                </Value>
-                                            </Block>
-                                        </Value>
-                                        <Statement name='DO0'>
-                                            <Block type='variables_set'>
-                                                <Field name='VAR' variabletype=''>
-                                                    x
-                                                </Field>
-                                                <Value name='VALUE'>
-                                                    <Block type='logic_boolean'>
-                                                        <Field name='BOOL'>TRUE</Field>
-                                                    </Block>
-                                                </Value>
+                                            <Block type='trade_definition_contracttype' deletable='false' movable='false'>
+                                                <Field name='TYPE_LIST' />
                                                 <Next>
-                                                    <Block type='controls_flow_statements'>
-                                                        <Field name='FLOW'>CONTINUE</Field>
+                                                    <Block
+                                                        type='trade_definition_candleinterval'
+                                                        deletable='false'
+                                                        movable='false'
+                                                    >
+                                                        <Field name='CANDLEINTERVAL_LIST'>60</Field>
+                                                        <Next>
+                                                            <Block
+                                                                type='trade_definition_restartbuysell'
+                                                                deletable='false'
+                                                                movable='false'
+                                                            >
+                                                                <Field name='TIME_MACHINE_ENABLED'>FALSE</Field>
+                                                                <Next>
+                                                                    <Block
+                                                                        type='trade_definition_restartonerror'
+                                                                        deletable='false'
+                                                                        movable='false'
+                                                                    >
+                                                                        <Field name='RESTARTONERROR'>TRUE</Field>
+                                                                        <Next>
+                                                                            <Block
+                                                                                type='trade_definition_alternate_markets'
+                                                                                deletable='false'
+                                                                                movable='false'
+                                                                            >
+                                                                                <Field name='ALT_MARKETS_ENABLED'>
+                                                                                    TRUE
+                                                                                </Field>
+                                                                                <Field name='ALT_MARKETS_EVERY'>1</Field>
+                                                                            </Block>
+                                                                        </Next>
+                                                                    </Block>
+                                                                </Next>
+                                                            </Block>
+                                                        </Next>
                                                     </Block>
                                                 </Next>
                                             </Block>
-                                        </Statement>
-                                        <Next>
-                                            <Block type='notify'>
-                                                <Field name='NOTIFICATION_TYPE'>success</Field>
-                                                <Field name='NOTIFICATION_SOUND'>silent</Field>
-                                                <Value name='MESSAGE'>
-                                                    <Shadow type='text'>
-                                                        <Field name='TEXT'>abc</Field>
-                                                    </Shadow>
-                                                </Value>
-                                            </Block>
                                         </Next>
                                     </Block>
-                                </Statement>
+                                </Next>
                             </Block>
-                        </Next>
+                        </Statement>
                     </Block>
                 </Example>
             </Examples>

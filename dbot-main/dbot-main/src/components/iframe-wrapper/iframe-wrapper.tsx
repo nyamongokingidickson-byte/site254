@@ -133,11 +133,15 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
                             date_start: tradeData.date_start || Math.floor(Date.now() / 1000),
                             status: tradeData.status || 'open',
                             entry_tick_display_value:
-                                tradeData.entry_tick_display_value || tradeData.entry_spot_display_value ||
-                                tradeData.entry_tick || tradeData.entry_spot,
+                                tradeData.entry_tick_display_value ||
+                                tradeData.entry_spot_display_value ||
+                                tradeData.entry_tick ||
+                                tradeData.entry_spot,
                             exit_tick_display_value:
-                                tradeData.exit_tick_display_value || tradeData.exit_spot_display_value ||
-                                tradeData.exit_tick || tradeData.exit_spot,
+                                tradeData.exit_tick_display_value ||
+                                tradeData.exit_spot_display_value ||
+                                tradeData.exit_tick ||
+                                tradeData.exit_spot,
                             entry_tick_time: tradeData.entry_tick_time || tradeData.entry_spot_time,
                             exit_tick_time: tradeData.exit_tick_time || tradeData.exit_spot_time,
                             profit: tradeData.profit ?? tradeData.margin ?? tradeData.payout ?? undefined,
@@ -203,7 +207,10 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
                 console.log(`🔄 [${title}] Received contract update from iframe:`, updateData);
 
                 if (updateData.contract_id && transactions?.onBotContractEvent) {
-                    console.log(`📝 [${title}] Forwarding contract update to transactions store for contract_id:`, updateData.contract_id);
+                    console.log(
+                        `📝 [${title}] Forwarding contract update to transactions store for contract_id:`,
+                        updateData.contract_id
+                    );
                     transactions.onBotContractEvent(updateData);
                 }
                 return;

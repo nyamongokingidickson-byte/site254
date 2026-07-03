@@ -14,7 +14,7 @@ import useDevMode from '@/hooks/useDevMode';
 import { useStore } from '@/hooks/useStore';
 import useThemeSwitcher from '@/hooks/useThemeSwitcher';
 import { ThemeProvider } from '@deriv-com/quill-ui';
-import { setSmartChartsPublicPath } from '@deriv-com/smartcharts-champion';
+import { setSmartChartsPublicPath } from '@deriv/deriv-charts';
 import { localize } from '@deriv-com/translations';
 import Audio from '../components/audio';
 import BlocklyLoading from '../components/blockly-loading';
@@ -165,7 +165,7 @@ const AppContent = observer(() => {
                     <BotBuilder />
                     <BotStopped />
                     <TransactionDetailsModal />
-                    <FloatingScanner 
+                    <FloatingScanner
                         is_open={dashboard.is_floating_scanner_visible}
                         onClose={() => dashboard.setFloatingScannerVisibility(false)}
                     />

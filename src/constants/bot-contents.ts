@@ -12,30 +12,27 @@ export const tabs_title: TTabsTitle = Object.freeze({
 });
 
 export const DBOT_TABS: TDashboardTabIndex = Object.freeze({
-    BOT_IDEAS: 0,
-    BEST_BOTS: 1,
-    DASHBOARD: 2,
-    BOT_BUILDER: 3,
-    AUTO_TRADES: 4,
-    MANUAL_TRADING: 5,
-    SCANNER: 6,
-    ANALYSIS_TOOL: 7,
-    DTRADER: 8,
-    MATCHES: 9,
-    CHART: 10,
-    TRADING_BOTS: 11,
-    STRATEGIES: 12,
-    COPY_TRADING: 13,
-    TRADINGVIEW: 14,
-    SPEEDBOT: 15,
-    CHATS: 16,
+    DASHBOARD: 0,
+    BOT_BUILDER: 1,
+    AUTO_TRADES: 2,
+    MANUAL_TRADING: 3,
+    SCANNER: 4,
+    ANALYSIS_TOOL: 5,
+    DTRADER: 6,
+    MATCHES: 7,
+    CHART: 8,
+    TRADING_BOTS: 9,
+    STRATEGIES: 10,
+    COPY_TRADING: 11,
+    TRADINGVIEW: 12,
+    SPEEDBOT: 13,
+    HYBRID_BOTS: 14,
+    CHATS: 15,
 });
 
 export const MAX_STRATEGIES = 10;
 
 export const TAB_IDS = [
-    'id-bot-ideas',
-    'id-best-bots',
     'id-dbot-dashboard',
     'id-bot-builder',
     'id-auto-trades',
@@ -50,6 +47,7 @@ export const TAB_IDS = [
     'id-copy-trading',
     'id-tradingview',
     'id-speedbot',
+    'id-hybrid-bots',
     'id-chats',
 ];
 
