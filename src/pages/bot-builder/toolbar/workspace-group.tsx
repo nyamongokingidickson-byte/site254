@@ -12,6 +12,7 @@ import {
     LabelPairedMagnifyingGlassPlusMdRegularIcon,
     LabelPairedObjectsAlignLeftMdRegularIcon,
     LabelPairedSearchCaptionRegularIcon,
+    LabelPairedSparklesCaptionBoldIcon,
 } from '@deriv/quill-icons/LabelPaired';
 import { localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
@@ -21,7 +22,7 @@ import ToolbarIcon from './toolbar-icon';
 
 const WorkspaceGroup = observer(() => {
     const { dashboard, toolbar, load_modal, save_modal } = useStore();
-    const { setPreviewOnPopup, setChartModalVisibility } = dashboard;
+    const { setPreviewOnPopup, setChartModalVisibility, setProAnalysisModalVisibility } = dashboard;
     const { has_redo_stack, has_undo_stack, onResetClick, onSortClick, onUndoClick, onZoomInOutClick } = toolbar;
     const { toggleSaveModal } = save_modal;
     const { toggleLoadModal } = load_modal;
@@ -99,6 +100,18 @@ const WorkspaceGroup = observer(() => {
                                     onClick={() => setChartModalVisibility()}
                                 >
                                     <LabelPairedChartLineMdRegularIcon />
+                                </span>
+                            }
+                        />
+                        <ToolbarIcon
+                            popover_message={localize('Pro Analysis Tool')}
+                            icon={
+                                <span
+                                    className='toolbar__icon'
+                                    id='db-toolbar__pro-analysis-button'
+                                    onClick={() => setProAnalysisModalVisibility()}
+                                >
+                                    <LabelPairedSparklesCaptionBoldIcon height='24px' width='24px' />
                                 </span>
                             }
                         />

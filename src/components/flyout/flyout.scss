@@ -20,6 +20,7 @@
     inset-inline-start: 250px;
     top: 0;
     background-color: var(--general-main-2);
+    width: min(560px, calc(100vw - 320px));
     height: calc(100vh - 232px);
     max-height: calc(100vh - 232px);
     z-index: 11;

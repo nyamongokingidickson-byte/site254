@@ -237,7 +237,6 @@ const Flyout = observer(() => {
                     flyout__help: is_help_content,
                     flyout__normal: !is_help_content && !is_search_flyout,
                 })}
-                style={{ width: `${flyout_width}px` }}
             >
                 {is_search_flyout && !is_help_content && (
                     <SearchResult search_term={search_term} total_result={total_result} />

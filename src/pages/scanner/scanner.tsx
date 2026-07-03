@@ -894,6 +894,8 @@ const Scanner = observer(() => {
                             onChange={e => setStake(e.target.value)}
                             min='0.35'
                             step='0.1'
+                            aria-label={localize('Stake amount')}
+                            title={localize('Stake amount')}
                         />
                     </div>
                 </div>
@@ -915,6 +917,8 @@ const Scanner = observer(() => {
                                             [strategy.id]: e.target.checked,
                                         }));
                                     }}
+                                    aria-label={strategy.name}
+                                    title={strategy.name}
                                 />
                                 <span className={`strategy-badge strategy-badge--${strategy.type}`}>
                                     {strategy.name}
@@ -1022,12 +1026,13 @@ const Scanner = observer(() => {
                                     {selectedMarketAnalysis.digitFrequencies.map(freq => {
                                         const isStrongest = freq.digit === selectedMarketAnalysis.powerIndex.strongest;
                                         const isWeakest = freq.digit === selectedMarketAnalysis.powerIndex.weakest;
+                                        const heightBucket = Math.round(freq.percentage / 10) * 10;
+                                        const heightClass = `dc-scanner__freq-bar--${heightBucket}`;
                                         return (
                                             <div className='dc-scanner__freq-bar-wrapper' key={freq.digit}>
                                                 <div className='dc-scanner__freq-bar-container'>
                                                     <div
-                                                        className={`dc-scanner__freq-bar ${isStrongest ? 'dc-scanner__freq-bar--strongest' : ''} ${isWeakest ? 'dc-scanner__freq-bar--weakest' : ''}`}
-                                                        style={{ height: `${freq.percentage * 3.5}px` }}
+                                                        className={`dc-scanner__freq-bar ${heightClass} ${isStrongest ? 'dc-scanner__freq-bar--strongest' : ''} ${isWeakest ? 'dc-scanner__freq-bar--weakest' : ''}`}
                                                     />
                                                 </div>
                                                 <span className='dc-scanner__freq-digit'>{freq.digit}</span>
@@ -1076,20 +1081,29 @@ const Scanner = observer(() => {
                         </h3>
                         <div className='dc-scanner__signals-tabs'>
                             <button
+                                type='button'
                                 className={`dc-scanner__sig-tab ${activeSignalsTab === 'standard' ? 'dc-scanner__sig-tab--active' : ''}`}
                                 onClick={() => setActiveSignalsTab('standard')}
+                                aria-label={localize('Show standard signals')}
+                                title={localize('Show standard signals')}
                             >
                                 <Localize i18n_default_text='Standard' />
                             </button>
                             <button
+                                type='button'
                                 className={`dc-scanner__sig-tab ${activeSignalsTab === 'pro' ? 'dc-scanner__sig-tab--active' : ''}`}
                                 onClick={() => setActiveSignalsTab('pro')}
+                                aria-label={localize('Show pro signals')}
+                                title={localize('Show pro signals')}
                             >
                                 <Localize i18n_default_text='Pro' />
                             </button>
                             <button
+                                type='button'
                                 className={`dc-scanner__sig-tab ${activeSignalsTab === 'super' ? 'dc-scanner__sig-tab--active' : ''}`}
                                 onClick={() => setActiveSignalsTab('super')}
+                                aria-label={localize('Show super signals')}
+                                title={localize('Show super signals')}
                             >
                                 <Localize i18n_default_text='Super' />
                             </button>
@@ -1120,6 +1134,7 @@ const Scanner = observer(() => {
                                     </div>
                                     <div className='dc-scanner__signal-card-footer'>
                                         <button
+                                            type='button'
                                             className='dc-scanner__load-btn'
                                             onClick={() =>
                                                 handleLoadStrategyToBotBuilder(
@@ -1128,6 +1143,8 @@ const Scanner = observer(() => {
                                                     item.signal
                                                 )
                                             }
+                                            aria-label={localize('Load strategy to bot builder')}
+                                            title={localize('Load strategy to bot builder')}
                                         >
                                             <Localize i18n_default_text='Load to Bot Builder' />
                                         </button>

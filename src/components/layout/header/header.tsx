@@ -12,6 +12,7 @@ import { ApiTokenAuthService } from '@/services/api-token-auth.service';
 import { navigateToTransfer } from '@/utils/transfer-utils';
 import { Localize, localize } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
+import ToggleSwitch from '@/components/shared_ui/toggle-switch';
 import { AppLogo } from '../app-logo';
 import AccountSwitcher from './account-switcher';
 import DarkModeToggle from './DarkModeToggle';
@@ -22,7 +23,9 @@ import './header.scss';
 const AppHeader = observer(() => {
     const { isDesktop } = useDevice();
     const { isAuthorizing, activeLoginid, setIsAuthorizing, authData } = useApiBase();
-    const { client } = useStore() ?? {};
+    const store = useStore() ?? {};
+    const { client, toolbar } = store;
+    const { setSpeedModeEnabled, speed_mode_enabled } = toolbar ?? {};
     const [authTimeout, setAuthTimeout] = useState(false);
     const [isTokenLoginVisible, setIsTokenLoginVisible] = useState(false);
     const [apiToken, setApiToken] = useState('');
@@ -265,6 +268,15 @@ const AppHeader = observer(() => {
                     {isDesktop ? <MenuItems /> : renderAccountSection('left')}
                 </Wrapper>
                 <Wrapper variant='right'>
+                    <div className='app-header__speed-mode'>
+                        <span className='app-header__speed-mode-label'>{localize('Speed mode')}</span>
+                        <ToggleSwitch
+                            id='app-header-speed-mode-toggle'
+                            is_enabled={Boolean(speed_mode_enabled)}
+                            handleToggle={() => setSpeedModeEnabled?.(!speed_mode_enabled)}
+                            name='speed_mode_toggle'
+                        />
+                    </div>
                     <DarkModeToggle />
                     {renderAccountSection('right')}
                 </Wrapper>

@@ -76,6 +76,7 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        -webkit-user-select: none;
         user-select: none;
         z-index: 1;
         visibility: visible;
@@ -104,6 +105,7 @@
         display: flex;
         flex-direction: row;
         color: var(--text-general);
+        -webkit-user-select: none;
         user-select: none; // Prevent text selection on rapid clicks
 
         &:hover {
@@ -152,6 +154,7 @@
     &__row {
         cursor: pointer;
         border-top: 1px solid var(--general-section-6);
+        -webkit-user-select: none;
         user-select: none; // Prevent text selection on rapid clicks
 
         #{$toolbox}__category--selected {

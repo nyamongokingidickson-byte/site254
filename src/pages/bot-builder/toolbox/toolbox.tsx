@@ -93,76 +93,78 @@ const Toolbox = observer(() => {
                             {toolbox_dom &&
                                 Array.from(toolbox_dom.childNodes as HTMLElement[]).map((category, index) => {
                                     if (category.tagName.toUpperCase() === 'CATEGORY') {
+                                        const category_id = category.getAttribute('id');
                                         const has_sub_category = hasSubCategory(category.children);
                                         const is_sub_category_open = sub_category_index.includes(index);
                                         return (
-                                            <div
-                                                key={`db-toolbox__row--${category.getAttribute('id')}`}
-                                                className={classNames('db-toolbox__row', {
-                                                    'db-toolbox__row--active':
-                                                        selected_category?.getAttribute('id') === category?.id,
-                                                    'db-toolbox__row--pending':
-                                                        pending_selection === category?.getAttribute('id'),
-                                                })}
-                                            >
+                                            <React.Fragment key={`db-toolbox__row--${category_id}`}>
                                                 <div
-                                                    className='db-toolbox__item'
-                                                    onClick={() => {
-                                                        // eslint-disable-next-line no-unused-expressions
-                                                        has_sub_category
-                                                            ? onToolboxItemExpand(index)
-                                                            : onToolboxItemClick(category);
-                                                    }}
+                                                    className={classNames('db-toolbox__row', {
+                                                        'db-toolbox__row--active':
+                                                            selected_category?.getAttribute('id') === category?.id,
+                                                        'db-toolbox__row--pending':
+                                                            pending_selection === category?.getAttribute('id'),
+                                                    })}
                                                 >
-                                                    <div className='db-toolbox__category-text'>
-                                                        <div className='db-toolbox__label'>
-                                                            {localize(category.getAttribute('name') as string)}
-                                                        </div>
-                                                        {has_sub_category && (
-                                                            <div
-                                                                className={classNames('db-toolbox__category-arrow', {
-                                                                    'db-toolbox__category-arrow--active':
-                                                                        is_sub_category_open,
-                                                                })}
-                                                            >
-                                                                <LabelPairedChevronDownMdFillIcon fill='var(--text-general)' />
+                                                    <div
+                                                        className='db-toolbox__item'
+                                                        onClick={() => {
+                                                            // eslint-disable-next-line no-unused-expressions
+                                                            has_sub_category
+                                                                ? onToolboxItemExpand(index)
+                                                                : onToolboxItemClick(category);
+                                                        }}
+                                                    >
+                                                        <div className='db-toolbox__category-text'>
+                                                            <div className='db-toolbox__label'>
+                                                                {localize(category.getAttribute('name') as string)}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                {has_sub_category &&
-                                                    is_sub_category_open &&
-                                                    (Array.from(category.childNodes) as HTMLElement[]).map(
-                                                        subCategory => {
-                                                            return (
+                                                            {has_sub_category && (
                                                                 <div
-                                                                    key={`db-toolbox__sub-category-row--${subCategory.getAttribute(
-                                                                        'id'
-                                                                    )}`}
-                                                                    className={classNames(
-                                                                        'db-toolbox__sub-category-row',
-                                                                        {
-                                                                            'db-toolbox__sub-category-row--active':
-                                                                                selected_category?.getAttribute(
-                                                                                    'id'
-                                                                                ) === subCategory?.id,
-                                                                            'db-toolbox__sub-category-row--pending':
-                                                                                pending_selection ===
-                                                                                subCategory?.getAttribute('id'),
-                                                                        }
-                                                                    )}
-                                                                    onClick={() => {
-                                                                        onToolboxItemClick(subCategory);
-                                                                    }}
+                                                                    className={classNames('db-toolbox__category-arrow', {
+                                                                        'db-toolbox__category-arrow--active':
+                                                                            is_sub_category_open,
+                                                                    })}
                                                                 >
-                                                                    <Text size='xxs'>
-                                                                        {subCategory.getAttribute('name') as string}
-                                                                    </Text>
+                                                                    <LabelPairedChevronDownMdFillIcon fill='var(--text-general)' />
                                                                 </div>
-                                                            );
-                                                        }
-                                                    )}
-                                            </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    {has_sub_category &&
+                                                        is_sub_category_open &&
+                                                        (Array.from(category.childNodes) as HTMLElement[]).map(
+                                                            subCategory => {
+                                                                return (
+                                                                    <div
+                                                                        key={`db-toolbox__sub-category-row--${subCategory.getAttribute(
+                                                                            'id'
+                                                                        )}`}
+                                                                        className={classNames(
+                                                                            'db-toolbox__sub-category-row',
+                                                                            {
+                                                                                'db-toolbox__sub-category-row--active':
+                                                                                    selected_category?.getAttribute(
+                                                                                        'id'
+                                                                                    ) === subCategory?.id,
+                                                                                'db-toolbox__sub-category-row--pending':
+                                                                                    pending_selection ===
+                                                                                    subCategory?.getAttribute('id'),
+                                                                            }
+                                                                        )}
+                                                                        onClick={() => {
+                                                                            onToolboxItemClick(subCategory);
+                                                                        }}
+                                                                    >
+                                                                        <Text size='xxs'>
+                                                                            {subCategory.getAttribute('name') as string}
+                                                                        </Text>
+                                                                    </div>
+                                                                );
+                                                            }
+                                                        )}
+                                                </div>
+                                            </React.Fragment>
                                         );
                                     }
                                     return null;
