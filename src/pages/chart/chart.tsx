@@ -72,7 +72,7 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
         setIsSafari(isSafariBrowser());
 
         return () => {
-            chart_api.api.forgetAll('ticks');
+            chart_api.api?.forgetAll('ticks');
         };
     }, []);
 
@@ -84,21 +84,31 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
         if (!symbol) updateSymbol();
     }, [symbol, updateSymbol]);
 
-    const requestAPI = (req: ServerTimeRequest | ActiveSymbolsRequest | TradingTimesRequest) => {
-        return chart_api.api.send(req);
-    };
-    const requestForgetStream = (subscription_id: string) => {
-        subscription_id && chart_api.api.forget(subscription_id);
+    const ensureChartApi = async () => {
+        if (!chart_api.api) {
+            await chart_api.init();
+        }
+        return chart_api.api;
     };
 
-    const requestSubscribe = async (req: TicksStreamRequest, callback: (data: any) => void) => {
+    const requestAPI = async (req: ServerTimeRequest | ActiveSymbolsRequest | TradingTimesRequest) => {
+        const api = await ensureChartApi();
+        return api.send(req);
+    };
+    const requestForgetStream = async (subscription_id: string) => {
+        const api = await ensureChartApi();
+        subscription_id && api.forget(subscription_id);
+    };
+
+    const requestSubscribe = async (req: TicksStreamRequest, callback: (data: TicksHistoryResponse | []) => void) => {
         try {
-            requestForgetStream(chartSubscriptionIdRef.current);
-            const history = await chart_api.api.send(req);
+            await requestForgetStream(chartSubscriptionIdRef.current);
+            const api = await ensureChartApi();
+            const history = await api.send(req);
             setChartSubscriptionId(history?.subscription.id);
             if (history) callback(history);
-            if (req.subscribe === 1) {
-                subscriptions[history?.subscription.id] = chart_api.api
+            if (req.subscribe === 1 && history?.subscription?.id) {
+                subscriptions[history.subscription.id] = api
                     .onMessage()
                     ?.subscribe(({ data }: { data: TicksHistoryResponse }) => {
                         callback(data);
@@ -142,8 +152,10 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
                 enabledNavigationWidget={isDesktop}
                 granularity={granularity}
                 requestAPI={requestAPI}
-                requestForget={() => {}}
-                requestForgetStream={() => {}}
+                requestForget={() => {
+                    chart_api.api?.forgetAll('ticks');
+                }}
+                requestForgetStream={requestForgetStream}
                 requestSubscribe={requestSubscribe}
                 settings={settings}
                 symbol={symbol}
