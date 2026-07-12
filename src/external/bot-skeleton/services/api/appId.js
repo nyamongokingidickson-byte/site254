@@ -169,9 +169,19 @@ export const getToken = () => {
         client_accounts = undefined;
     }
 
-    const active_account = (client_accounts && client_accounts[active_loginid]) || undefined;
+    const active_account = active_loginid && client_accounts ? client_accounts[active_loginid] : undefined;
     const fallback_auth_token = localStorage.getItem('authToken');
-    const token = active_account || fallback_auth_token || undefined;
+    let token = active_account || fallback_auth_token || undefined;
+
+    if (!token && !active_loginid && client_accounts) {
+        const account_keys = Object.keys(client_accounts);
+        if (account_keys.length === 1) {
+            token = client_accounts[account_keys[0]];
+            console.warn(
+                '[getToken] No active loginid found; falling back to the only available account token.'
+            );
+        }
+    }
 
     console.log('[getToken] Debug info:', {
         active_loginid,

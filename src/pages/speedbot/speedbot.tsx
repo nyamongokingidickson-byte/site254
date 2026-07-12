@@ -181,7 +181,7 @@ const SpeedBot = observer(() => {
         const { token } = getToken();
         if (!token) {
             setStatus('No token found. Please log in and select an account.');
-            throw new Error('No token');
+            throw new Error('No token found. Please log in and select an account.');
         }
         const { authorize, error } = await apiRef.current.authorize(token);
         if (error) {
