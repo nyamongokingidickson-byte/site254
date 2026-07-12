@@ -2,7 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { localize } from '@deriv-com/translations';
-import { generateDerivApiInstance, getToken, getLoginId } from '@/external/bot-skeleton/services/api/appId';
+import { api_base } from '@/external/bot-skeleton';
+import { safeSubscribe } from '@/utils/websocket-handler';
+import { getToken, getLoginId } from '@/external/bot-skeleton/services/api/appId';
 import { contract_stages } from '@/constants/contract-stage';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { useStore } from '@/hooks/useStore';
@@ -31,6 +33,8 @@ const Matches = observer(() => {
     const [entryCondition, setEntryCondition] = useState('most');
     const [whatToTrade, setWhatToTrade] = useState('most');
     const [predictionMode, setPredictionMode] = useState('most');
+    const [symbolsError, setSymbolsError] = useState('');
+    const [isLoadingSymbols, setIsLoadingSymbols] = useState(false);
 
     // Refs
     const recentDigits = useRef([]);
@@ -45,7 +49,6 @@ const Matches = observer(() => {
     const isAutoTrading = useRef(false);
     const entryConditionMet = useRef(false);
     const isProcessingTrade = useRef(false);
-    const messageListener = useRef(null);
 
     // Store and API setup
     const store = useStore();
@@ -64,19 +67,13 @@ const Matches = observer(() => {
         let mounted = true;
 
         const initApi = async () => {
-            try {
-                const api = await generateDerivApiInstance();
-                if (!mounted) return;
-                apiRef.current = api;
+            setSymbolsError('');
+            setIsLoadingSymbols(true);
 
-                const { active_symbols, error } = await api.send({ active_symbols: 'brief' });
-                if (error) throw error;
-                const syn = (active_symbols || [])
-                    .filter(s => {
-                        // Same filter as SpeedBot: get synthetic indices and R_ symbols
-                        return /synthetic/i.test(s.market) || /^R_/.test(s.symbol);
-                    })
-                    .map(s => ({ symbol: s.symbol, display_name: s.display_name }))
+            const filterSymbols = active_symbols =>
+                (active_symbols || [])
+                    .filter(s => /synthetic/i.test(s.market) || /^R_/.test(s.symbol))
+                    .map(s => ({ symbol: s.symbol, display_name: s.display_name || s.symbol }))
                     .sort((a, b) => {
                         const numA = parseInt(a.display_name.match(/\d+/)?.[0]) || 0;
                         const numB = parseInt(b.display_name.match(/\d+/)?.[0]) || 0;
@@ -85,27 +82,67 @@ const Matches = observer(() => {
                         const isOneB = /\(1s\)/i.test(b.display_name);
                         return Number(isOneA) - Number(isOneB);
                     });
+
+            try {
+                if (!api_base.api) {
+                    await api_base.init();
+                }
+                if (!mounted) return;
+
+                const api = api_base.api;
+                if (!api) {
+                    throw new Error('API base did not initialize correctly');
+                }
+                apiRef.current = api;
+
+                let active_symbols = [];
+                let syn = [];
+
+                try {
+                    active_symbols = api_base.has_active_symbols
+                        ? api_base.active_symbols || []
+                        : api_base.active_symbols_promise
+                        ? await api_base.active_symbols_promise
+                        : [];
+
+                    if (!active_symbols || !active_symbols.length) {
+                        active_symbols = await api_base.getActiveSymbols();
+                    }
+                } catch (innerError) {
+                    console.warn('Fallback active symbol fetch failed, trying direct API call:', innerError);
+                }
+
+                if (!active_symbols || !active_symbols.length) {
+                    const response = await api.send({ active_symbols: 'brief' });
+                    active_symbols = response?.active_symbols || [];
+                }
+
+                syn = filterSymbols(active_symbols);
+
+                if (!syn.length) {
+                    setSymbolsError(localize('No markets were found. Please refresh or check your connection.'));
+                }
+
                 setSymbols(syn);
                 if (syn[0]?.symbol) {
                     setMarket(prev => prev || syn[0].symbol);
                 }
             } catch (e) {
                 console.error('Error loading symbols:', e);
+                setSymbolsError(localize('Unable to load markets. Please try again.'));
+            } finally {
+                if (mounted) setIsLoadingSymbols(false);
             }
         };
 
-        init();
+        initApi();
         if (registerBotListeners) registerBotListeners();
 
         return () => {
             if (unregisterBotListeners) unregisterBotListeners();
             if (tickSubscription.current) {
                 try {
-                    if (tickSubscription.current.unsubscribe) {
-                        tickSubscription.current.unsubscribe();
-                    } else if (apiRef.current && tickSubscription.current) {
-                        apiRef.current.forget({ forget: tickSubscription.current });
-                    }
+                    tickSubscription.current.unsubscribe?.();
                 } catch (e) {
                     console.error('Error unsubscribing ticks:', e);
                 }
@@ -117,9 +154,7 @@ const Matches = observer(() => {
             }
             contractSubscriptions.current.forEach(sub => {
                 try {
-                    if (sub && typeof sub.unsubscribe === 'function') {
-                        sub.unsubscribe();
-                    }
+                    sub?.unsubscribe?.();
                 } catch (e) {
                     console.error('Error unsubscribing contract:', e);
                 }
@@ -182,24 +217,9 @@ const Matches = observer(() => {
         if (market && ticks && apiRef.current) {
             subscribeToTicks();
             return () => {
-                if (messageListener.current && apiRef.current?.connection) {
-                    try {
-                        apiRef.current.connection.removeEventListener('message', messageListener.current);
-                    } catch (e) {
-                        console.error('Error removing message listener:', e);
-                    }
-                    messageListener.current = null;
-                }
                 if (tickSubscription.current) {
                     try {
-                        if (typeof tickSubscription.current === 'string' && apiRef.current) {
-                            apiRef.current.forget({ forget: tickSubscription.current });
-                        } else if (
-                            tickSubscription.current &&
-                            typeof tickSubscription.current.unsubscribe === 'function'
-                        ) {
-                            tickSubscription.current.unsubscribe();
-                        }
+                        tickSubscription.current.unsubscribe?.();
                     } catch (e) {
                         console.error('Error unsubscribing:', e);
                     }
@@ -218,28 +238,15 @@ const Matches = observer(() => {
 
         const api = apiRef.current;
 
-        // Clean up existing subscription and listener
-        if (messageListener.current && api.connection) {
-            try {
-                api.connection.removeEventListener('message', messageListener.current);
-            } catch (e) {
-                console.error('Error removing message listener:', e);
-            }
-            messageListener.current = null;
-        }
-
         if (tickSubscription.current) {
             try {
-                if (typeof tickSubscription.current === 'string') {
-                    api.forget({ forget: tickSubscription.current });
-                } else if (tickSubscription.current && typeof tickSubscription.current.unsubscribe === 'function') {
-                    tickSubscription.current.unsubscribe();
-                }
+                tickSubscription.current.unsubscribe?.();
             } catch (e) {
                 console.error('Error cleaning up tick subscription:', e);
             }
             tickSubscription.current = null;
         }
+
         isSubscribed.current = false;
         allDigits.current = [];
         recentDigits.current = [];
@@ -254,46 +261,47 @@ const Matches = observer(() => {
         }
 
         try {
-            // Subscribe to live ticks
-            const { subscription, error } = await api.send({ ticks: market, subscribe: 1 });
-            if (error) throw error;
-            if (subscription?.id) tickSubscription.current = subscription.id;
+            const tickObservable = (api as any).subscribe({ ticks: market });
+            if (!tickObservable) {
+                throw new Error('Failed to create tick observable');
+            }
 
-            // Listen for streaming ticks
-            const onMsg = evt => {
-                try {
-                    const data = JSON.parse(evt.data);
-                    if (data?.msg_type === 'tick' && data?.tick?.symbol === market) {
-                        const epoch = data.tick.epoch || data.tick.tick_time || null;
-                        if (epoch && lastTickEpoch.current === epoch) {
-                            return;
-                        }
-                        const quote = data.tick.quote;
-                        const formattedPrice = parseFloat(quote).toFixed(pipSize.current || 4);
-                        const digit = parseInt(formattedPrice[formattedPrice.length - 1]);
-
-                        lastTickEpoch.current = epoch;
-                        setCurrentPrice(formattedPrice);
-                        setCurrentDigit(digit);
-                        allDigits.current.push(digit);
-                        recentDigits.current.push(digit);
-                        if (recentDigits.current.length > 10) {
-                            recentDigits.current = recentDigits.current.slice(-10);
-                        }
-
-                        if (tickCount && allDigits.current.length > tickCount) {
-                            allDigits.current = allDigits.current.slice(-tickCount);
-                        }
-
-                        analyzeDigits(allDigits.current);
+            tickSubscription.current = safeSubscribe(
+                tickObservable,
+                data => {
+                    if (data?.error) {
+                        return;
                     }
-                } catch (e) {
-                    // Ignore parse errors
+                    if (data?.msg_type !== 'tick' || data?.tick?.symbol !== market) {
+                        return;
+                    }
+                    const epoch = data.tick.epoch || data.tick.tick_time || null;
+                    if (epoch && lastTickEpoch.current === epoch) {
+                        return;
+                    }
+                    const quote = data.tick.quote;
+                    const formattedPrice = parseFloat(quote).toFixed(pipSize.current || 4);
+                    const digit = parseInt(formattedPrice[formattedPrice.length - 1], 10);
+
+                    lastTickEpoch.current = epoch;
+                    setCurrentPrice(formattedPrice);
+                    setCurrentDigit(digit);
+                    allDigits.current.push(digit);
+                    recentDigits.current.push(digit);
+                    if (recentDigits.current.length > 10) {
+                        recentDigits.current = recentDigits.current.slice(-10);
+                    }
+
+                    if (tickCount && allDigits.current.length > tickCount) {
+                        allDigits.current = allDigits.current.slice(-tickCount);
+                    }
+
+                    analyzeDigits(allDigits.current);
+                },
+                error => {
+                    console.error('Tick stream error:', error);
                 }
-            };
-            api.connection?.addEventListener('message', onMsg);
-            // track the current listener so we can remove it reliably on resubscribe/unmount
-            messageListener.current = onMsg;
+            );
             isSubscribed.current = true;
 
             // Also fetch historical ticks for initial analysis
@@ -312,8 +320,8 @@ const Matches = observer(() => {
                     pipSize.current = historyResponse.pip_size || 4;
 
                     const digits = prices.map(price => {
-                        const formatted = price.toFixed(pipSize.current);
-                        return parseInt(formatted[formatted.length - 1]);
+                        const formatted = Number(price).toFixed(pipSize.current);
+                        return parseInt(formatted[formatted.length - 1], 10);
                     });
 
                     allDigits.current = digits;
@@ -884,14 +892,19 @@ const Matches = observer(() => {
                             <select
                                 value={market}
                                 onChange={e => setMarket(e.target.value)}
-                                disabled={isPlacingTrades || isAutoTradingGlobal}
+                                disabled={isPlacingTrades || isAutoTradingGlobal || symbols.length === 0}
                             >
-                                {symbols.map(symbol => (
-                                    <option key={symbol.symbol} value={symbol.symbol}>
-                                        {symbol.display_name}
-                                    </option>
-                                ))}
+                                {symbols.length === 0 ? (
+                                    <option value="">{symbolsError || (isLoadingSymbols ? localize('Loading markets...') : localize('No markets available'))}</option>
+                                ) : (
+                                    symbols.map(symbol => (
+                                        <option key={symbol.symbol} value={symbol.symbol}>
+                                            {symbol.display_name}
+                                        </option>
+                                    ))
+                                )}
                             </select>
+                            {symbolsError && <div className='market-error'>{symbolsError}</div>}
                         </div>
 
                         <div className='control-group digit-control'>

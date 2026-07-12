@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import Text from '@/components/shared_ui/text';
-import { localize } from '@deriv-com/translations';
-import { generateDerivApiInstance, getLoginId, getToken } from '@/external/bot-skeleton/services/api/appId';
 import { contract_stages } from '@/constants/contract-stage';
+import { api_base } from '@/external/bot-skeleton';
+import { getLoginId, getToken } from '@/external/bot-skeleton/services/api/appId';
 import { useStore } from '@/hooks/useStore';
 import { isSpecialCRAccount } from '@/utils/special-accounts-config';
+import { localize } from '@deriv-com/translations';
 import './speedbot.scss';
 
 // Minimal trade types we will support initially
@@ -105,16 +106,46 @@ const SpeedBot = observer(() => {
 
     useEffect(() => {
         // Initialize API connection and fetch active symbols
-        const api = generateDerivApiInstance();
-        apiRef.current = api;
         const init = async () => {
-            try {
-                // Fetch active symbols (volatility indices)
-                const { active_symbols, error: asErr } = await api.send({ active_symbols: 'brief' });
-                if (asErr) throw asErr;
-                const syn = (active_symbols || [])
+            if (!api_base.api) {
+                await api_base.init();
+            }
+            const api = api_base.api;
+            if (!api) {
+                throw new Error('Failed to initialize shared api_base connection');
+            }
+            apiRef.current = api;
+
+            const filterSymbols = active_symbols =>
+                (active_symbols || [])
                     .filter((s: any) => /synthetic/i.test(s.market) || /^R_/.test(s.symbol))
-                    .map((s: any) => ({ symbol: s.symbol, display_name: s.display_name }));
+                    .map((s: any) => ({ symbol: s.symbol, display_name: s.display_name }))
+                    .sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+            try {
+                let active_symbols = [];
+
+                if (api_base.has_active_symbols) {
+                    active_symbols = api_base.active_symbols || [];
+                } else if (api_base.active_symbols_promise) {
+                    await api_base.active_symbols_promise;
+                    active_symbols = api_base.active_symbols || [];
+                }
+
+                if (!active_symbols.length) {
+                    try {
+                        active_symbols = await api_base.getActiveSymbols();
+                    } catch (innerError) {
+                        console.warn('Fallback active symbol fetch failed, trying direct API call:', innerError);
+                    }
+                }
+
+                if (!active_symbols.length) {
+                    const response = await api.send({ active_symbols: 'brief' });
+                    active_symbols = response?.active_symbols || [];
+                }
+
+                const syn = filterSymbols(active_symbols);
                 setSymbols(syn);
                 if (!symbol && syn[0]?.symbol) setSymbol(syn[0].symbol);
                 if (syn[0]?.symbol) startTicks(syn[0].symbol);

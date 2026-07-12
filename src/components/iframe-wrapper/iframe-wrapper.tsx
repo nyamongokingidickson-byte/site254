@@ -7,9 +7,11 @@ interface IframeWrapperProps {
     src: string;
     title: string;
     className?: string;
+    onLoad?: () => void;
+    onError?: () => void;
 }
 
-const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, className = '' }) => {
+const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, className = '', onLoad, onError }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
@@ -54,12 +56,14 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
     const handleLoad = useCallback(() => {
         setIsLoading(false);
         setHasError(false);
-    }, []);
+        onLoad?.();
+    }, [onLoad]);
 
     const handleError = useCallback(() => {
         setIsLoading(false);
         setHasError(true);
-    }, []);
+        onError?.();
+    }, [onError]);
 
     useEffect(() => {
         const iframe = iframeRef.current;

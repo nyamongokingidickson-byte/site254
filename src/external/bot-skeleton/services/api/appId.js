@@ -170,6 +170,8 @@ export const getToken = () => {
     }
 
     const active_account = (client_accounts && client_accounts[active_loginid]) || undefined;
+    const fallback_auth_token = localStorage.getItem('authToken');
+    const token = active_account || fallback_auth_token || undefined;
 
     console.log('[getToken] Debug info:', {
         active_loginid,
@@ -177,11 +179,12 @@ export const getToken = () => {
         client_accounts_keys: client_accounts ? Object.keys(client_accounts) : 'N/A',
         active_account_type: typeof active_account,
         active_account_value: active_account ? 'Present' : 'MISSING',
-        has_token: !!active_account,
+        fallback_auth_token: fallback_auth_token ? 'Present' : 'MISSING',
+        has_token: !!token,
     });
 
     return {
-        token: active_account ?? undefined,
+        token,
         account_id: active_loginid ?? undefined,
     };
 };

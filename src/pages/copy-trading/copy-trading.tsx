@@ -59,15 +59,12 @@ const CopyTrading = observer(() => {
                 // Wait for manager to restore state
                 await new Promise(resolve => setTimeout(resolve, 100));
 
-                // Sync demo to real token
+                        // Sync demo to real token
                 const isDemoToReal = localStorage.getItem('demo_to_real') === 'true';
                 if (isDemoToReal) {
-                    const accounts_list = JSON.parse(localStorage.getItem('accountsList') || '{}');
-                    const keys = Object.keys(accounts_list);
-                    const key = keys.find(k => !k.startsWith('VR'));
-                    if (key) {
-                        const value = accounts_list[key];
-                        manager.setMasterToken(value);
+                    const realAccount = getRealAccountTokenInfo();
+                    if (realAccount) {
+                        manager.setMasterToken(realAccount.token);
                     }
                 }
 
@@ -118,18 +115,62 @@ const CopyTrading = observer(() => {
         };
     }, []);
 
+    const getRealAccountTokenInfo = () => {
+        const accountsList = JSON.parse(localStorage.getItem('accountsList') || '{}') as Record<string, string>;
+        const clientAccounts = JSON.parse(localStorage.getItem('clientAccounts') || '{}') as Record<string, any>;
+        const activeLoginId = localStorage.getItem('active_loginid');
+        const authToken = localStorage.getItem('authToken');
+
+        const isRealAccount = (loginid: string) => loginid && !loginid.startsWith('VR');
+
+        if (activeLoginId && isRealAccount(activeLoginId)) {
+            const token = accountsList[activeLoginId] || clientAccounts[activeLoginId]?.token || authToken;
+            if (token) {
+                return { loginid: activeLoginId, token };
+            }
+        }
+
+        const realAccountFromList = Object.entries(accountsList).find(([loginid]) => isRealAccount(loginid));
+        if (realAccountFromList) {
+            return { loginid: realAccountFromList[0], token: realAccountFromList[1] };
+        }
+
+        const realAccountFromClient = Object.entries(clientAccounts).find(
+            ([loginid, account]) => isRealAccount(loginid) && account?.token
+        );
+        if (realAccountFromClient) {
+            return { loginid: realAccountFromClient[0], token: realAccountFromClient[1].token };
+        }
+
+        if (authToken) {
+            const realAccountFromAuth = Object.entries(accountsList).find(
+                ([, token]) => token === authToken
+            );
+            if (realAccountFromAuth && isRealAccount(realAccountFromAuth[0])) {
+                return { loginid: realAccountFromAuth[0], token: authToken };
+            }
+
+            const realClientFromAuth = Object.entries(clientAccounts).find(
+                ([loginid, account]) => account?.token === authToken && isRealAccount(loginid)
+            );
+            if (realClientFromAuth) {
+                return { loginid: realClientFromAuth[0], token: authToken };
+            }
+        }
+
+        return null;
+    };
+
     // Demo to real handler
     const handleDemoToReal = async () => {
         const isStart = !demoToRealActive;
-        const accounts_list = JSON.parse(localStorage.getItem('accountsList') || '{}');
         const manager = managerRef.current;
         if (!manager) return;
 
         if (isStart) {
-            const keys = Object.keys(accounts_list);
-            const key = keys.find(k => !k.startsWith('VR'));
-            if (key) {
-                const value = accounts_list[key];
+            const realAccount = getRealAccountTokenInfo();
+            if (realAccount) {
+                const value = realAccount.token;
                 let storedArray = JSON.parse(localStorage.getItem('copyTokensArray') || '[]');
                 if (!storedArray.includes(value)) {
                     storedArray.push(value);
@@ -158,10 +199,9 @@ const CopyTrading = observer(() => {
                 setErrorModalVisible(true);
             }
         } else {
-            const keys = Object.keys(accounts_list);
-            const key = keys.find(k => !k.startsWith('VR'));
-            if (key) {
-                const value = accounts_list[key];
+            const realAccount = getRealAccountTokenInfo();
+            if (realAccount) {
+                const value = realAccount.token;
                 let storedArray = JSON.parse(localStorage.getItem('copyTokensArray') || '[]');
                 storedArray = storedArray.filter((token: string) => token !== value);
                 localStorage.setItem('copyTokensArray', JSON.stringify(storedArray));

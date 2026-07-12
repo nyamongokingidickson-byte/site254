@@ -8,10 +8,11 @@ import './dtrader.scss';
 const Dtrader = observer(() => {
     const [iframeSrc, setIframeSrc] = useState<string>('');
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [hasError, setHasError] = useState<boolean>(false);
 
     const buildIframeUrl = useCallback((token: string, loginId: string) => {
         const clientAccountsStr = localStorage.getItem('clientAccounts') || '{}';
-        const accountsListStr = localStorage.getItem('accountsList') || '{}';
         let currency = 'USD';
 
         try {
@@ -19,16 +20,6 @@ const Dtrader = observer(() => {
             const account = clientAccounts[loginId];
             if (account?.currency) {
                 currency = account.currency;
-            } else {
-                const accountsList = JSON.parse(accountsListStr);
-                const accountInfo = Object.keys(accountsList).find(key => key === loginId);
-                if (accountInfo) {
-                    const accountData = JSON.parse(localStorage.getItem('accountList') || '[]');
-                    const acc = accountData.find((a: any) => a.loginid === loginId);
-                    if (acc?.currency) {
-                        currency = acc.currency;
-                    }
-                }
             }
         } catch (error) {
             console.error('Error parsing clientAccounts:', error);
@@ -53,39 +44,80 @@ const Dtrader = observer(() => {
             hide_bot_controls: 'true',
         });
 
-        setIframeSrc(`https://deriv-dtrader.vercel.app/dtrader?${params.toString()}`);
+        try {
+            setIframeSrc(`https://deriv-dtrader.vercel.app/dtrader?${params.toString()}`);
+            setIsLoading(true);
+            setHasError(false);
+        } catch (error) {
+            console.error('Error building iframe URL:', error);
+            setHasError(true);
+        }
     }, []);
 
     useEffect(() => {
-        const { token } = getToken();
-        const activeLoginId = getLoginId();
+        let { token } = getToken();
+        let activeLoginId = getLoginId();
 
-        if (token && activeLoginId) {
-            setIsAuthenticated(true);
-            buildIframeUrl(token, activeLoginId);
-        } else {
-            setIsAuthenticated(false);
-            setIframeSrc(
-                'https://deriv-dtrader.vercel.app/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=over_under'
-            );
+        const authToken = localStorage.getItem('authToken');
+        const storedLoginId = localStorage.getItem('active_loginid');
+
+        if ((!token || !activeLoginId) && authToken) {
+            token = authToken;
+        }
+        if (!activeLoginId && storedLoginId) {
+            activeLoginId = storedLoginId;
+        }
+
+        try {
+            if (token && activeLoginId) {
+                setIsAuthenticated(true);
+                buildIframeUrl(token, activeLoginId);
+            } else {
+                setIsAuthenticated(false);
+                setIframeSrc(
+                    'https://deriv-dtrader.vercel.app/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=over_under'
+                );
+                setIsLoading(true);
+                setHasError(false);
+            }
+        } catch (error) {
+            console.error('Error during dtrader initialization:', error);
+            setHasError(true);
+            setIsLoading(false);
         }
     }, [buildIframeUrl]);
 
     useEffect(() => {
         const checkAuthAndUpdate = () => {
-            const { token } = getToken();
-            const activeLoginId = getLoginId();
+            try {
+                let { token } = getToken();
+                let activeLoginId = getLoginId();
+                const authToken = localStorage.getItem('authToken');
+                const storedLoginId = localStorage.getItem('active_loginid');
 
-            if (token && activeLoginId) {
-                if (!isAuthenticated) {
-                    setIsAuthenticated(true);
+                if ((!token || !activeLoginId) && authToken) {
+                    token = authToken;
                 }
-                buildIframeUrl(token, activeLoginId);
-            } else if (isAuthenticated) {
-                setIsAuthenticated(false);
-                setIframeSrc(
-                    'https://deriv-dtrader.vercel.app/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=over_under'
-                );
+                if (!activeLoginId && storedLoginId) {
+                    activeLoginId = storedLoginId;
+                }
+
+                if (token && activeLoginId) {
+                    if (!isAuthenticated) {
+                        setIsAuthenticated(true);
+                    }
+                    buildIframeUrl(token, activeLoginId);
+                } else if (isAuthenticated) {
+                    setIsAuthenticated(false);
+                    setIframeSrc(
+                        'https://deriv-dtrader.vercel.app/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=over_under'
+                    );
+                    setIsLoading(true);
+                    setHasError(false);
+                }
+            } catch (error) {
+                console.error('Error checking auth and updating dtrader:', error);
+                setHasError(true);
             }
         };
 
@@ -110,6 +142,40 @@ const Dtrader = observer(() => {
         };
     }, [isAuthenticated, buildIframeUrl]);
 
+    const handleIframeLoad = useCallback(() => {
+        setIsLoading(false);
+        setHasError(false);
+    }, []);
+
+    const handleIframeError = useCallback(() => {
+        setIsLoading(false);
+        setHasError(true);
+        console.error('DTrader iframe failed to load. The external site may be blocking iframe embedding.');
+    }, []);
+
+    if (hasError) {
+        return (
+            <div className='dtrader-error'>
+                <div className='dtrader-error__content'>
+                    <h2>DTrader Loading Error</h2>
+                    <p>Unable to load DTrader at this time. The external service may be temporarily unavailable.</p>
+                    <p className='dtrader-error__details'>
+                        If this issue persists, please check your internet connection or try again later.
+                    </p>
+                    <button
+                        className='dtrader-error__retry'
+                        onClick={() => {
+                            setHasError(false);
+                            setIsLoading(true);
+                        }}
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     if (!iframeSrc) {
         return (
             <div className='dtrader-placeholder'>
@@ -118,7 +184,15 @@ const Dtrader = observer(() => {
         );
     }
 
-    return <IframeWrapper src={iframeSrc} title='DTrader' className='dtrader-container' />;
+    return (
+        <IframeWrapper
+            src={iframeSrc}
+            title='DTrader'
+            className='dtrader-container'
+            onLoad={handleIframeLoad}
+            onError={handleIframeError}
+        />
+    );
 });
 
 export default Dtrader;

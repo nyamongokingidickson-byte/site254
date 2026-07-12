@@ -1,10 +1,11 @@
 // DIFFBOT - Digits Market Trading Component
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef,useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { localize } from '@deriv-com/translations';
-import { generateDerivApiInstance, getToken, getLoginId } from '@/external/bot-skeleton/services/api/appId';
 import { contract_stages } from '@/constants/contract-stage';
+import { api_base } from '@/external/bot-skeleton';
+import { getLoginId,getToken } from '@/external/bot-skeleton/services/api/appId';
 import { useStore } from '@/hooks/useStore';
+import { localize } from '@deriv-com/translations';
 import './diffbot.css';
 
 const Diffbot = observer(() => {
@@ -47,16 +48,45 @@ const Diffbot = observer(() => {
     // Initialize API and load symbols
     useEffect(() => {
         const init = async () => {
-            const api = generateDerivApiInstance();
+            if (!api_base.api) {
+                await api_base.init();
+            }
+            const api = api_base.api;
+            if (!api) {
+                throw new Error('Failed to initialize shared api_base connection');
+            }
             apiRef.current = api;
 
-            // Load symbols
-            try {
-                const { active_symbols, error } = await api.send({ active_symbols: 'brief' });
-                if (error) throw error;
-                const syn = (active_symbols || [])
+            const filterSymbols = active_symbols =>
+                (active_symbols || [])
                     .filter(s => /synthetic/i.test(s.market) || /^R_/.test(s.symbol))
-                    .map(s => ({ symbol: s.symbol, display_name: s.display_name }));
+                    .map(s => ({ symbol: s.symbol, display_name: s.display_name }))
+                    .sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+            try {
+                let active_symbols = [];
+
+                if (api_base.has_active_symbols) {
+                    active_symbols = api_base.active_symbols || [];
+                } else if (api_base.active_symbols_promise) {
+                    await api_base.active_symbols_promise;
+                    active_symbols = api_base.active_symbols || [];
+                }
+
+                if (!active_symbols.length) {
+                    try {
+                        active_symbols = await api_base.getActiveSymbols();
+                    } catch (innerError) {
+                        console.warn('Fallback active symbol fetch failed, trying direct API call:', innerError);
+                    }
+                }
+
+                if (!active_symbols.length) {
+                    const response = await api.send({ active_symbols: 'brief' });
+                    active_symbols = response?.active_symbols || [];
+                }
+
+                const syn = filterSymbols(active_symbols);
                 setSymbols(syn);
                 if (syn[0]?.symbol) {
                     setMarket(prev => prev || syn[0].symbol);
