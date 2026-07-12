@@ -87,6 +87,66 @@ const SpeedBot = observer(() => {
 
     const [is_running, setIsRunning] = useState(false);
     const stopFlagRef = useRef<boolean>(false);
+    const currentTokenRef = useRef<string | null>(null);
+
+    const resetAuthorization = () => {
+        setIsAuthorized(false);
+        currentTokenRef.current = null;
+    };
+
+    const ensureApiConnection = async () => {
+        if (!apiRef.current || apiRef.current?.connection?.readyState !== 1) {
+            try {
+                apiRef.current?.disconnect?.();
+            } catch {
+                // ignore disconnect errors
+            }
+            apiRef.current = generateDerivApiInstance();
+        }
+    };
+
+    const authorizeWithToken = async (token: string) => {
+        await ensureApiConnection();
+
+        if (is_authorized && currentTokenRef.current === token && apiRef.current?.connection?.readyState === 1) {
+            return;
+        }
+
+        const { authorize, error } = await apiRef.current.authorize(token);
+        if (error) {
+            setIsAuthorized(false);
+            throw error;
+        }
+
+        setIsAuthorized(true);
+        currentTokenRef.current = token;
+        setAccountCurrency(authorize?.currency || 'USD');
+
+        try {
+            const loginid = authorize?.loginid || V2GetActiveClientId();
+            store?.client?.setLoginId?.(loginid || '');
+            store?.client?.setCurrency?.(authorize?.currency || 'USD');
+            store?.client?.setIsLoggedIn?.(true);
+        } catch {
+            // ignore shared store sync failures
+        }
+    };
+
+    useEffect(() => {
+        const checkTokenChange = () => {
+            const token = V2GetActiveToken();
+            if (currentTokenRef.current && token !== currentTokenRef.current) {
+                resetAuthorization();
+            }
+        };
+
+        window.addEventListener('storage', checkTokenChange);
+        const interval = window.setInterval(checkTokenChange, 1500);
+        return () => {
+            window.removeEventListener('storage', checkTokenChange);
+            window.clearInterval(interval);
+        };
+    }, []);
 
     const getHintClass = (d: number) => {
         if (tradeType === 'DIGITEVEN') return d % 2 === 0 ? 'is-green' : 'is-red';
@@ -150,26 +210,21 @@ const SpeedBot = observer(() => {
     }, []);
 
     const authorizeIfNeeded = async () => {
-        if (is_authorized) return;
         const token = V2GetActiveToken();
         if (!token) {
             setStatus('No token found. Please log in and select an account.');
+            resetAuthorization();
             throw new Error('No token found. Please log in and select an account.');
         }
-        const { authorize, error } = await apiRef.current.authorize(token);
-        if (error) {
-            setStatus(`Authorization error: ${error.message || error.code}`);
+        if (is_authorized && currentTokenRef.current === token && apiRef.current?.connection?.readyState === 1) {
+            return;
+        }
+        try {
+            await authorizeWithToken(token);
+        } catch (error: any) {
+            setStatus(`Authorization error: ${error?.message || error?.code || 'unknown'}`);
             throw error;
         }
-        setIsAuthorized(true);
-        const loginid = authorize?.loginid || V2GetActiveClientId();
-        setAccountCurrency(authorize?.currency || 'USD');
-        try {
-            // Sync SpeedBot auth state into shared ClientStore so Transactions store keys correctly by account
-            store?.client?.setLoginId?.(loginid || '');
-            store?.client?.setCurrency?.(authorize?.currency || 'USD');
-            store?.client?.setIsLoggedIn?.(true);
-        } catch {}
     };
 
     const stopTicks = () => {
@@ -236,34 +291,22 @@ const SpeedBot = observer(() => {
         });
 
         if (isSpecialCR) {
-            // ONLY for special CR accounts - re-authorize with demo account token before each purchase
-            // This ensures the API uses demo account balance, preventing "insufficient funds" errors
             const demoToken = V2GetActiveToken(); // This already returns demo token for special CR accounts
 
-            if (demoToken && apiRef.current) {
-                console.log('[SpeedBot] 🎯 Special CR account detected - re-authorizing with demo account');
-                const { authorize, error: authError } = await apiRef.current.authorize(demoToken);
-                if (authError) {
+            if (demoToken) {
+                console.log('[SpeedBot] 🎯 Special CR account detected - authorizing with demo account token');
+                try {
+                    await authorizeWithToken(demoToken);
+                    console.log('[SpeedBot] ✅ Authorized with demo account');
+                } catch (authError: any) {
                     console.error('[SpeedBot] ❌ Failed to authorize with demo token:', authError);
-                    throw new Error(`Authorization failed: ${authError.message || authError.code}`);
-                }
-                if (authorize) {
-                    console.log(
-                        '[SpeedBot] ✅ Authorized with demo account:',
-                        authorize.loginid,
-                        'Balance:',
-                        authorize.balance
-                    );
-                    setIsAuthorized(true);
-                    setAccountCurrency(authorize?.currency || 'USD');
+                    throw new Error(`Authorization failed: ${authError?.message || authError?.code || 'unknown'}`);
                 }
             } else {
                 console.warn('[SpeedBot] ⚠️ Demo token not found for special CR account');
-                // Fallback to normal authorization
                 await authorizeIfNeeded();
             }
         } else {
-            // Normal account - use standard authorization flow without any special CR interference
             console.log('[SpeedBot] ✅ Normal account detected - using standard authorization flow');
             await authorizeIfNeeded();
         }

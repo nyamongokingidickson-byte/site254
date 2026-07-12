@@ -43,21 +43,25 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
             const loginid = V2GetActiveClientId();
             const appId = getAppId(); // Get the current app ID
 
-            if (token && loginid && iframe.contentWindow) {
+            if (token && iframe.contentWindow) {
                 try {
-                    // Send auth token, loginid, and appId to iframe
-                    iframe.contentWindow.postMessage(
-                        {
-                            type: 'AUTH_TOKEN',
-                            token,
-                            loginid,
-                            appId, // Add appId to the message
-                            timestamp: Date.now(),
-                        },
-                        '*'
-                    );
+                    const payload: Record<string, unknown> = {
+                        type: 'AUTH_TOKEN',
+                        token,
+                        timestamp: Date.now(),
+                    };
+
+                    if (loginid) {
+                        payload.loginid = loginid;
+                    }
+
+                    if (appId) {
+                        payload.appId = appId;
+                    }
+
+                    iframe.contentWindow.postMessage(payload, '*');
                     console.log(
-                        `🔐 [${title}] Sent auth token to iframe (loginid: ${loginid?.substring(0, 4)}..., appId: ${appId})`
+                        `🔐 [${title}] Sent auth token to iframe (token: ${token?.substring(0, 8)}..., loginid: ${loginid ? `${loginid?.substring(0, 4)}...` : 'none'}, appId: ${appId})`
                     );
                 } catch (error) {
                     console.error('Error sending auth data to iframe:', error);
