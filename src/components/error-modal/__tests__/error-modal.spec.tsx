@@ -15,12 +15,12 @@ describe('<ErrorModal />', () => {
         document.body.removeChild(modal_root_el);
     });
 
-    const messages = [{ message: 'Sorry for the interruption' }];
+    const messages = [{ message: 'Something went wrong' }];
 
     it('should render the error modal with modal content', () => {
         render(<ErrorModal messages={messages} />);
         const refresh_button = screen.getByRole('button', { name: /Refresh/i });
-        expect(screen.getByText(/Sorry for the interruption/i)).toBeInTheDocument();
+        expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument();
         expect(refresh_button).toBeInTheDocument();
     });
 

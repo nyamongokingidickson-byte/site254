@@ -59,8 +59,23 @@ const Tab = ({
         'dc-tabs__item--is-scrollable-and-active': is_scrollable && is_active,
     });
     const title_color = is_active ? active_icon_color : icon_color;
+    const tabRef = React.useRef<HTMLLIElement>(null);
+
+    React.useEffect(() => {
+        if (tabRef.current) {
+            tabRef.current.style.color = title_color;
+        }
+    }, [title_color]);
+
+    const setRefs = (node: HTMLLIElement | null) => {
+        tabRef.current = node;
+        if (active_tab_ref) {
+            active_tab_ref.current = node;
+        }
+    };
+
     return (
-        <li id={id} className={classes} style={{ color: title_color }} onClick={onClick} ref={active_tab_ref}>
+        <li id={id} className={classes} onClick={onClick} ref={setRefs}>
             {icon && <Icon icon={icon} size={icon_size} custom_color={title_color} className='dc-tabs__item__icon' />}
             {header_content || label}
             {!!count && <Counter className='dc-tabs__item__counter' count={count} />}

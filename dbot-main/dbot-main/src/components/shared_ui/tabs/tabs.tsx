@@ -61,9 +61,10 @@ const Tabs = ({
     single_tab_has_no_label = false,
     top,
 }: TTabsProps) => {
-    const [active_line_style, updateActiveLineStyle] = React.useState({});
     const active_tab_ref = React.useRef<HTMLLIElement>(null);
+    const active_line_ref = React.useRef<HTMLLIElement>(null);
     const tabs_wrapper_ref = React.useRef<HTMLUListElement>(null);
+    const tabs_root_ref = React.useRef<HTMLDivElement>(null);
     const pushHash = (hash: string) => {
         history.replace(`${history.location.pathname}${window.location.search}#${hash}`);
     };
@@ -71,11 +72,11 @@ const Tabs = ({
     const setActiveLineStyle = React.useCallback(() => {
         const tabs_wrapper_bounds = tabs_wrapper_ref?.current?.getBoundingClientRect();
         const active_tab_bounds = active_tab_ref?.current?.getBoundingClientRect();
-        if (tabs_wrapper_bounds && active_tab_bounds) {
-            updateActiveLineStyle({
-                left: active_tab_bounds.left - tabs_wrapper_bounds.left,
-                width: active_tab_bounds.width,
-            });
+        const active_line_el = active_line_ref.current;
+
+        if (tabs_wrapper_bounds && active_tab_bounds && active_line_el) {
+            active_line_el.style.left = `${active_tab_bounds.left - tabs_wrapper_bounds.left}px`;
+            active_line_el.style.width = `${active_tab_bounds.width}px`;
         } else {
             setTimeout(() => {
                 setActiveLineStyle();
@@ -142,14 +143,21 @@ const Tabs = ({
         tab_width = fit_content ? '150px' : `${(100 / valid_children.length).toFixed(2)}%`;
     }
 
+    React.useEffect(() => {
+        if (tabs_root_ref.current) {
+            tabs_root_ref.current.style.setProperty('--tab-width', tab_width);
+            tabs_root_ref.current.style.background = background_color || '';
+        }
+    }, [tab_width, background_color]);
+
     return (
         <div
+            ref={tabs_root_ref}
             className={classNames('dc-tabs', {
                 [`dc-tabs--${className}`]: className,
                 'dc-tabs--top': top,
                 'dc-tabs--100vw': is_100vw,
             })}
-            style={{ '--tab-width': `${tab_width}`, background: background_color } as React.CSSProperties}
         >
             <div className={classNames({ [`dc-tabs__list--header--${className}`]: className })}>
                 <ul
@@ -201,7 +209,10 @@ const Tabs = ({
                             );
                         })}
                         {has_active_line && !is_scrollable && (
-                            <span
+                            <li
+                                ref={active_line_ref}
+                                aria-hidden='true'
+                                role='presentation'
                                 className={classNames('dc-tabs__active-line', {
                                     'dc-tabs__active-line--top': top,
                                     'dc-tabs__active-line--bottom': bottom,
@@ -209,7 +220,6 @@ const Tabs = ({
                                     'dc-tabs__active-line--header-fit-content': header_fit_content,
                                     'dc-tabs__active-line--is-hidden': children.length === 1 && single_tab_has_no_label,
                                 })}
-                                style={active_line_style}
                             />
                         )}
                     </ThemedScrollbars>

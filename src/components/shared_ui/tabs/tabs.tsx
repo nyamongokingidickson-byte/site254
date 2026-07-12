@@ -62,9 +62,44 @@ const Tabs = ({
     single_tab_has_no_label = false,
     top,
 }: TTabsProps) => {
-    const [active_line_style, updateActiveLineStyle] = React.useState({});
     const active_tab_ref = React.useRef<HTMLLIElement>(null);
+    const tabs_root_ref = React.useRef<HTMLDivElement>(null);
     const tabs_wrapper_ref = React.useRef<HTMLUListElement>(null);
+    const scroll_wrapper_ref = React.useRef<HTMLDivElement & SVGSVGElement>(null);
+    const active_line_ref = React.useRef<HTMLLIElement>(null);
+
+    const setActiveLineStyle = React.useCallback(() => {
+        const tabs_wrapper_bounds = tabs_wrapper_ref?.current?.getBoundingClientRect();
+        const active_tab_bounds = active_tab_ref?.current?.getBoundingClientRect();
+        const active_line_el = active_line_ref.current;
+
+        if (tabs_wrapper_bounds && active_tab_bounds && active_line_el) {
+            active_line_el.style.setProperty('--active-line-left', `${active_tab_bounds.left - tabs_wrapper_bounds.left}px`);
+            active_line_el.style.setProperty('--active-line-width', `${active_tab_bounds.width}px`);
+            return;
+        }
+
+        setTimeout(() => {
+            setActiveLineStyle();
+        }, 500);
+    }, []);
+
+    const scrollToActiveTab = React.useCallback((behavior: ScrollBehavior = 'smooth') => {
+        const tab_el = active_tab_ref.current;
+        const scroll_el = scroll_wrapper_ref.current;
+        if (!tab_el || !scroll_el) return;
+
+        const tab_left = tab_el.offsetLeft;
+        const tab_right = tab_left + tab_el.offsetWidth;
+        const visible_left = scroll_el.scrollLeft;
+        const visible_right = visible_left + scroll_el.clientWidth;
+
+        if (tab_left < visible_left || tab_right > visible_right) {
+            const target = tab_left - (scroll_el.clientWidth - tab_el.offsetWidth) / 2;
+            scroll_el.scrollTo({ left: Math.max(0, target), behavior });
+        }
+    }, []);
+
     const pushHash = (hash: string) => {
         if (history) {
             history.replace(`${history.location.pathname}${window.location.search}#${hash}`);
@@ -120,8 +155,9 @@ const Tabs = ({
             onTabItemClick?.(active_tab_index);
         }
         setActiveLineStyle();
+        scrollToActiveTab('smooth');
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [active_tab_index, setActiveLineStyle]);
+    }, [active_tab_index, setActiveLineStyle, scrollToActiveTab]);
 
     React.useEffect(() => {
         if (active_index >= 0 && active_index !== active_tab_index) {
@@ -149,32 +185,34 @@ const Tabs = ({
 
     return (
         <div
+            ref={tabs_root_ref}
             className={classNames('dc-tabs', {
                 [`dc-tabs--${className}`]: className,
                 'dc-tabs--top': top,
                 'dc-tabs--100vw': is_100vw,
             })}
-            style={{ '--tab-width': `${tab_width}`, background: background_color } as React.CSSProperties}
         >
             <div className={classNames({ [`dc-tabs__list--header--${className}`]: className })}>
-                <ul
-                    className={classNames('dc-tabs__list', {
-                        'dc-tabs__list--top': top,
-                        'dc-tabs__list--border-bottom': has_bottom_line,
-                        'dc-tabs__list--bottom': bottom,
-                        'dc-tabs__list--center': center,
-                        'dc-tabs__list--header-fit-content': header_fit_content,
-                        'dc-tabs__list--full-width': is_full_width,
-                        [`dc-tabs__list--${className}`]: className,
-                        'dc-tabs__list--overflow-hidden': is_overflow_hidden,
-                    })}
-                    ref={tabs_wrapper_ref}
+                <ThemedScrollbars
+                    className='dc-themed-scrollbars-wrapper'
+                    is_only_horizontal
+                    is_scrollbar_hidden
+                    is_bypassed={!is_scrollable}
+                    refSetter={scroll_wrapper_ref}
+                    width='100%'
                 >
-                    <ThemedScrollbars
-                        className='dc-themed-scrollbars-wrapper'
-                        is_only_horizontal
-                        is_scrollbar_hidden
-                        is_bypassed={!is_scrollable}
+                    <ul
+                        className={classNames('dc-tabs__list', {
+                            'dc-tabs__list--top': top,
+                            'dc-tabs__list--border-bottom': has_bottom_line,
+                            'dc-tabs__list--bottom': bottom,
+                            'dc-tabs__list--center': center,
+                            'dc-tabs__list--header-fit-content': header_fit_content,
+                            'dc-tabs__list--full-width': is_full_width,
+                            [`dc-tabs__list--${className}`]: className,
+                            'dc-tabs__list--overflow-hidden': is_overflow_hidden,
+                        })}
+                        ref={tabs_wrapper_ref}
                     >
                         {React.Children.map(children, (child, index) => {
                             if (!child) return null;
@@ -206,7 +244,10 @@ const Tabs = ({
                             );
                         })}
                         {has_active_line && !is_scrollable && (
-                            <span
+                            <li
+                                ref={active_line_ref}
+                                aria-hidden='true'
+                                role='presentation'
                                 className={classNames('dc-tabs__active-line', {
                                     'dc-tabs__active-line--top': top,
                                     'dc-tabs__active-line--bottom': bottom,
@@ -214,11 +255,10 @@ const Tabs = ({
                                     'dc-tabs__active-line--header-fit-content': header_fit_content,
                                     'dc-tabs__active-line--is-hidden': children.length === 1 && single_tab_has_no_label,
                                 })}
-                                style={active_line_style}
                             />
                         )}
-                    </ThemedScrollbars>
-                </ul>
+                    </ul>
+                </ThemedScrollbars>
             </div>
             <div
                 className={classNames('dc-tabs__content', {

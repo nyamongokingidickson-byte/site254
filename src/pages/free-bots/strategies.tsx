@@ -162,7 +162,7 @@ const Strategies: React.FC = () => {
                         <p className='strategies__card-description'>
                             <Localize i18n_default_text='Predict if price will finish above or below target' />
                         </p>
-                        <button className='strategies__card-button' onClick={() => handleExploreClick('over-under')}>
+                        <button className='strategies__card-button' title='Explore Strategy' onClick={() => handleExploreClick('over-under')}>
                             <Localize i18n_default_text='Explore Strategy' />
                             <svg
                                 width='16'
@@ -193,7 +193,7 @@ const Strategies: React.FC = () => {
                         <p className='strategies__card-description'>
                             <Localize i18n_default_text='Forecast whether the final digit will be odd' />
                         </p>
-                        <button className='strategies__card-button' onClick={() => handleExploreClick('odd')}>
+                        <button className='strategies__card-button' title='Explore Strategy' onClick={() => handleExploreClick('odd')}>
                             <Localize i18n_default_text='Explore Strategy' />
                             <svg
                                 width='16'
@@ -224,7 +224,7 @@ const Strategies: React.FC = () => {
                         <p className='strategies__card-description'>
                             <Localize i18n_default_text='Forecast whether the final digit will be even' />
                         </p>
-                        <button className='strategies__card-button' onClick={() => handleExploreClick('even')}>
+                        <button className='strategies__card-button' title='Explore Strategy' onClick={() => handleExploreClick('even')}>
                             <Localize i18n_default_text='Explore Strategy' />
                             <svg
                                 width='16'
@@ -251,6 +251,7 @@ const Strategies: React.FC = () => {
                         </div>
                         <button
                             className='strategies__card-button strategies__card-button--top'
+                            title='Explore Strategy'
                             onClick={() => handleExploreClick('hit-and-run')}
                         >
                             <Localize i18n_default_text='Explore Strategy' />

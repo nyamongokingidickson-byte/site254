@@ -350,50 +350,16 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
     }, [src, isLoading, title]);
 
     return (
-        <div className={`iframe-wrapper ${className}`} style={{ pointerEvents: 'auto', position: 'relative' }}>
+        <div className={`iframe-wrapper ${className} ${hasError ? 'iframe-wrapper--error' : ''}`}>
             {isLoading && !hasError && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        color: 'var(--text-prominent)',
-                        fontSize: '1.4rem',
-                        zIndex: 100,
-                        pointerEvents: 'none',
-                        userSelect: 'none',
-                    }}
-                >
+                <div className='iframe-wrapper__loading'>
                     Loading {title}...
                 </div>
             )}
             {hasError && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        color: 'var(--text-prominent)',
-                        fontSize: '1.4rem',
-                        textAlign: 'center',
-                        padding: '2rem',
-                        zIndex: 1000,
-                        backgroundColor: 'var(--general-main-1)',
-                        borderRadius: '0.8rem',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    }}
-                >
-                    <p style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Failed to load {title}</p>
-                    <p
-                        style={{
-                            fontSize: '1rem',
-                            marginTop: '1rem',
-                            color: 'var(--text-less-prominent)',
-                            marginBottom: '1.5rem',
-                        }}
-                    >
+                <div className='iframe-wrapper__error-message'>
+                    <p className='iframe-wrapper__error-title'>Failed to load {title}</p>
+                    <p className='iframe-wrapper__error-text'>
                         The external site may be blocking iframe embedding or serving downloads instead of HTML.
                         <br />
                         <br />
@@ -408,16 +374,7 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
                         href={src}
                         target='_blank'
                         rel='noopener noreferrer'
-                        style={{
-                            display: 'inline-block',
-                            padding: '0.8rem 1.6rem',
-                            backgroundColor: 'var(--button-primary-default)',
-                            color: 'white',
-                            textDecoration: 'none',
-                            borderRadius: '0.4rem',
-                            fontSize: '1.2rem',
-                            marginTop: '1rem',
-                        }}
+                        className='iframe-wrapper__error-link'
                     >
                         Open in New Tab
                     </a>
@@ -427,30 +384,14 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
                 ref={iframeRef}
                 src={src}
                 title={title}
-                className='iframe-wrapper__frame'
+                className={classNames('iframe-wrapper__frame', {
+                    'iframe-wrapper__frame--hidden': hasError,
+                })}
                 frameBorder='0'
                 allowFullScreen
                 loading='eager'
                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; display-capture'
                 referrerPolicy='no-referrer-when-downgrade'
-                style={{
-                    display: 'block',
-                    width: '100%',
-                    height: '100%',
-                    minHeight: '100%',
-                    opacity: hasError ? 0 : 1,
-                    transition: 'opacity 0.3s',
-                    border: 'none',
-                    background: 'transparent',
-                    visibility: hasError ? 'hidden' : 'visible',
-                    pointerEvents: hasError ? 'none' : 'auto',
-                    zIndex: 10,
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                }}
                 onLoad={() => {
                     // Additional load handler to catch any issues
                     console.log('📦 Iframe onLoad event fired');

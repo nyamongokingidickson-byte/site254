@@ -36,11 +36,16 @@ const IframeWrapper: React.FC<IframeWrapperProps> = observer(({ src, title, clas
 
     const handleMessage = useCallback(
         (event: MessageEvent) => {
-            if (event.origin !== new URL(src).origin) return;
-            const { data } = event;
-            if (!data || typeof data !== 'object') return;
-            if (data.type === 'DERIV_APP_IFRAME_READY') {
-                sendAuthData();
+            try {
+                const targetOrigin = src.startsWith('http') ? new URL(src).origin : window.location.origin;
+                if (event.origin !== targetOrigin) return;
+                const { data } = event;
+                if (!data || typeof data !== 'object') return;
+                if (data.type === 'DERIV_APP_IFRAME_READY') {
+                    sendAuthData();
+                }
+            } catch (error) {
+                console.warn('[IframeWrapper] Error in postMessage origin check:', error);
             }
         },
         [sendAuthData, src]

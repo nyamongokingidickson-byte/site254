@@ -18,8 +18,8 @@ describe('<UnhandledErrorModal />', () => {
     it('renders the component with proper messages', () => {
         jest.spyOn(React, 'useState').mockImplementationOnce(() => React.useState<boolean>(true));
         render(<UnhandledErrorModal />);
-        expect(screen.getByText(/Sorry for the interruption/i)).toBeInTheDocument();
-        expect(screen.getByText(/Our servers hit a bump. Let’s refresh to move on./i)).toBeInTheDocument();
+        expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument();
+        expect(screen.getByText(/Please refresh the page to continue./i)).toBeInTheDocument();
         expect(screen.getByText('Refresh')).toBeInTheDocument();
     });
 

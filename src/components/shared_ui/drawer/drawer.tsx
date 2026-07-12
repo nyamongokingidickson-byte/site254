@@ -28,10 +28,25 @@ const Drawer = ({
 }: React.PropsWithChildren<TDrawer>) => {
     const [is_open, setIsOpen] = React.useState(props.is_open);
     const { isDesktop } = useDevice();
+    const drawerRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
         setIsOpen(props.is_open);
     }, [props.is_open]);
+
+    React.useLayoutEffect(() => {
+        if (!drawerRef.current) return;
+
+        drawerRef.current.style.zIndex = `${zIndex}`;
+        if (is_open && isDesktop) {
+            drawerRef.current.style.transform =
+                anchor === 'left'
+                    ? `translateX(calc(${width}px - 16px))`
+                    : `translateX(calc(-${width}px + 16px))`;
+        } else {
+            drawerRef.current.style.transform = '';
+        }
+    }, [anchor, isDesktop, is_open, width, zIndex]);
 
     const toggleDrawer = () => {
         setIsOpen(!is_open);
@@ -42,20 +57,12 @@ const Drawer = ({
 
     return (
         <div
+            ref={drawerRef}
             data-testid='drawer'
             className={classNames('dc-drawer', className, {
                 [`dc-drawer--${anchor}`]: isDesktop,
                 'dc-drawer--open': is_open,
             })}
-            style={{
-                zIndex,
-                transform:
-                    is_open && isDesktop
-                        ? anchor === 'left'
-                            ? `translateX(calc(${width}px - 16px))`
-                            : `translateX(calc(-${width}px + 16px))`
-                        : undefined,
-            }}
         >
             <div
                 className={classNames('dc-drawer__toggle', {

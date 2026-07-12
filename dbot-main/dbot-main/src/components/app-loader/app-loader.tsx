@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getBrandLabel, getBrandTitle } from '@/components/shared/utils/brand/brand';
 import './app-loader.scss';
 
@@ -38,6 +38,8 @@ const AppLoader: React.FC<AppLoaderProps> = ({ onLoadingComplete, duration = 120
         return () => clearTimeout(timer);
     }, [onLoadingComplete, effectiveDuration]);
 
+    const progressRef = useRef<HTMLDivElement | null>(null);
+
     // Progress bar and message advancement
     useEffect(() => {
         if (!isVisible) return;
@@ -72,6 +74,12 @@ const AppLoader: React.FC<AppLoaderProps> = ({ onLoadingComplete, duration = 120
 
         return () => clearInterval(interval);
     }, [isVisible, messageIndex, duration]);
+
+    React.useEffect(() => {
+        if (progressRef.current) {
+            progressRef.current.style.width = `${progress}%`;
+        }
+    }, [progress]);
 
     if (!isVisible) return null;
 
@@ -163,7 +171,7 @@ const AppLoader: React.FC<AppLoaderProps> = ({ onLoadingComplete, duration = 120
 
                     <div className='progress-wrapper'>
                         <div className='progress-track'>
-                            <div className='loading-bar-glow' style={{ width: `${progress}%` }} />
+                            <div className='loading-bar-glow' ref={progressRef} />
                             <div className='loading-bar-pulse' />
                         </div>
                         <div className='progress-counter'>{progress}%</div>

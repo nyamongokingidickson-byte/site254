@@ -405,11 +405,12 @@
                     transform: translateY(-4px);
 
                     .tab__dashboard__table__images {
-                        background: linear-gradient(135deg, rgba(0, 184, 173, 0.15) 0%, rgba(34, 211, 238, 0.08) 100%) !important;
+                        background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.06) 100%) !important;
                         box-shadow: 
-                            0 12px 24px rgba(0, 184, 173, 0.15),
-                            0 0 10px rgba(0, 184, 173, 0.1);
-                        border-color: rgba(0, 184, 173, 0.3) !important;
+                            0 16px 32px rgba(0, 0, 0, 0.12),
+                            0 0 14px rgba(255, 255, 255, 0.08);
+                        border-color: rgba(255, 255, 255, 0.22) !important;
+                        transform: translateY(-2px);
                     }
                 }
 
@@ -436,16 +437,16 @@
             }
 
             &__images {
-                background-color: var(--general-section-1) !important;
+                background-color: rgba(255, 255, 255, 0.04) !important;
                 margin-bottom: 0.8rem;
-                border-radius: 16px !important;
-                border: 1.5px solid rgba(255, 255, 255, 0.08);
+                border-radius: 18px !important;
+                border: 1px solid rgba(255, 255, 255, 0.12);
                 padding: 1.6rem;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+                box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
 
                 &--minimized {
                     @include mobile-or-tablet-screen {

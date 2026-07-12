@@ -41,6 +41,31 @@ const ThemedScrollbars = ({
     const [hoverRef, isHovered] = useHover<HTMLDivElement & SVGSVGElement>(refSetter, false);
 
     React.useEffect(() => {
+        const el = hoverRef?.current;
+        if (!el) return;
+
+        if (typeof height !== 'undefined' && height !== null) {
+            el.style.maxHeight = typeof height === 'number' ? `${height}px` : `${height}`;
+        } else {
+            el.style.maxHeight = '';
+        }
+        if (typeof width !== 'undefined' && width !== null) {
+            el.style.maxWidth = width;
+        } else {
+            el.style.maxWidth = '';
+        }
+        if (style) {
+            Object.entries(style).forEach(([key, value]) => {
+                if (value === undefined || value === null) {
+                    (el.style as any)[key] = '';
+                } else {
+                    (el.style as any)[key] = value;
+                }
+            });
+        }
+    }, [height, width, style, hoverRef]);
+
+    React.useEffect(() => {
         if (should_scroll_to_selected && scroll_height) {
             hoverRef?.current?.scrollTo(0, scroll_height);
         }
@@ -60,11 +85,6 @@ const ThemedScrollbars = ({
                 'dc-themed-scrollbars--only-horizontal-overlay': is_only_horizontal_overlay,
                 'dc-themed-scrollbars--hidden-scrollbar': is_scrollbar_hidden,
             })}
-            style={{
-                maxHeight: height || '100%',
-                maxWidth: width || 'none',
-                ...style,
-            }}
             onScroll={onScroll}
         >
             {children}

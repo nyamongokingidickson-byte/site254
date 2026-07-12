@@ -8,8 +8,7 @@
     scroll-behavior: smooth;
 
     /* Firefox only */
-    scrollbar-color: var(--state-active) var(--general-main-1);
-    scrollbar-width: thin;
+    /* Keep default scroll styling for broad compatibility */
 
     &__autohide {
         &::-webkit-scrollbar-thumb {
@@ -28,8 +27,22 @@
     }
 
     &--hidden-scrollbar {
+        /* Use only webkit scrollbar hiding for compatibility */
+
         &::-webkit-scrollbar {
             display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        &::-webkit-scrollbar-button {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        &::-webkit-scrollbar-corner {
+            background: transparent !important;
         }
     }
 

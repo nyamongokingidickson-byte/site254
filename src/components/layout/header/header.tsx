@@ -268,15 +268,6 @@ const AppHeader = observer(() => {
                     {isDesktop ? <MenuItems /> : renderAccountSection('left')}
                 </Wrapper>
                 <Wrapper variant='right'>
-                    <div className='app-header__speed-mode'>
-                        <span className='app-header__speed-mode-label'>{localize('Speed mode')}</span>
-                        <ToggleSwitch
-                            id='app-header-speed-mode-toggle'
-                            is_enabled={Boolean(speed_mode_enabled)}
-                            handleToggle={() => setSpeedModeEnabled?.(!speed_mode_enabled)}
-                            name='speed_mode_toggle'
-                        />
-                    </div>
                     <DarkModeToggle />
                     {renderAccountSection('right')}
                 </Wrapper>

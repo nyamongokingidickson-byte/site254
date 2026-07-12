@@ -9,7 +9,7 @@ import Dialog from '@/components/shared_ui/dialog';
 import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
 import Tabs from '@/components/shared_ui/tabs/tabs';
 import TradeTypeConfirmationModal from '@/components/trade-type-confirmation-modal';
-import { DBOT_TABS, TAB_IDS } from '@/constants/bot-contents';
+import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
@@ -46,7 +46,7 @@ import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 import RunPanel from '../../components/run-panel';
 import AutoTrades from '../auto-trades/auto-trades';
-import BestBots from '../best-bots';
+
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
 import ManualTrading from '../manual-trading';
@@ -95,7 +95,12 @@ const AppWrapper = observer(() => {
     } = run_panel;
     const { is_open } = quick_strategy;
     const { cancel_button_text, ok_button_text, title, message, dismissable, is_closed_on_cancel } = dialog_options as {
-        [key: string]: string;
+        cancel_button_text?: string;
+        ok_button_text?: string;
+        title?: string;
+        message?: string;
+        dismissable?: boolean;
+        is_closed_on_cancel?: boolean;
     };
     const { clear } = summary_card;
     const { BOT_BUILDER, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER, DTRADER } = DBOT_TABS;
@@ -255,15 +260,13 @@ const AppWrapper = observer(() => {
             return;
         }
 
-        if (connectionStatus !== CONNECTION_STATUS.OPENED) {
-            const is_bot_running = document.getElementById('db-animation__stop-button') !== null;
-            if (!is_bot_running) return;
+        const is_bot_running = document.getElementById('db-animation__stop-button') !== null;
+        if (!is_bot_running) return;
 
-            clear();
-            stopBot();
-            api_base.setIsRunning(false);
-            setWebSocketState(false);
-        }
+        clear();
+        stopBot();
+        api_base.setIsRunning(false);
+        setWebSocketState(false);
     }, [active_tab, active_trading_module, clear, connectionStatus, run_panel, setWebSocketState, stopBot]);
 
     // Update tab shadows height to match bot builder height
@@ -382,7 +385,7 @@ const AppWrapper = observer(() => {
 
     React.useEffect(() => {
         const trashcan_init_id = setTimeout(() => {
-            if (active_tab === BOT_BUILDER && Blockly?.derivWorkspace?.trashcan) {
+            if (active_tab === BOT_BUILDER && (window as any).Blockly?.derivWorkspace?.trashcan) {
                 const trashcanY = window.innerHeight - 250;
                 let trashcanX;
                 if (is_drawer_open) {
@@ -390,7 +393,7 @@ const AppWrapper = observer(() => {
                 } else {
                     trashcanX = isDbotRTL() ? 20 : window.innerWidth - 100;
                 }
-                Blockly?.derivWorkspace?.trashcan?.setTrashcanPosition(trashcanX, trashcanY);
+                (window as any).Blockly?.derivWorkspace?.trashcan?.setTrashcanPosition(trashcanX, trashcanY);
             }
         }, 100);
 
@@ -460,7 +463,7 @@ const AppWrapper = observer(() => {
                 >
                     <div>
                         {!isDesktop && left_tab_shadow && <span className='tabs-shadow tabs-shadow--left' />}{' '}
-                        <Tabs active_index={active_tab} className='main__tabs' onTabItemClick={handleTabChange} top>
+                        <Tabs active_index={active_tab} className='main__tabs' onTabItemClick={handleTabChange} top center is_scrollable>
 
                             <div
                                 label={
@@ -490,7 +493,7 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-bot-builder'
                             />
-                            {show_auto_trades && (
+                            {show_auto_trades ? (
                                 <div
                                     label={
                                         <>
@@ -506,8 +509,8 @@ const AppWrapper = observer(() => {
                                 >
                                     <AutoTrades />
                                 </div>
-                            )}
-                            {show_manual_trading && (
+                            ) : null}
+                            {show_manual_trading ? (
                                 <div
                                     label={
                                         <>
@@ -523,7 +526,7 @@ const AppWrapper = observer(() => {
                                 >
                                     <ManualTrading />
                                 </div>
-                            )}
+                            ) : null}
                             {show_scanner ? (
                                 <div
                                     label={
@@ -610,7 +613,7 @@ const AppWrapper = observer(() => {
                                 <Suspense
                                     fallback={<ChunkLoader message={localize('Please wait, loading Chart...')} />}
                                 >
-                                    <Chart />
+                                    <Chart show_digits_stats={false} />
                                 </Suspense>
                             </div>
                             <div
@@ -789,7 +792,7 @@ const AppWrapper = observer(() => {
                 has_close_icon
                 is_mobile_full_width={false}
                 is_visible={is_dialog_open}
-                onCancel={onCancelButtonClick}
+                onCancel={onCancelButtonClick ?? undefined}
                 onClose={onCloseDialog}
                 onConfirm={onOkButtonClick || onCloseDialog}
                 portal_element_id='modal_root'
