@@ -464,7 +464,7 @@ const Hyperbot = observer(() => {
         const token = V2GetActiveToken();
         if (!token) {
             alert('Please log in to place trades');
-            throw new Error('No token');
+            throw new Error('No token found. Please log in and select an account.');
         }
         try {
             const { authorize, error } = await apiRef.current.authorize(token);
