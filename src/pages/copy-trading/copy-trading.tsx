@@ -434,7 +434,7 @@ const CopyTrading = observer(() => {
             }
         } catch {}
 
-        const webSS = () => {
+        const webSS = async () => {
             // Build token list from localStorage accounts mapping
             const accounts_list = JSON.parse(localStorage.getItem('accountsList') || '{}');
             const tokens: string[] = Object.keys(accounts_list)
@@ -448,7 +448,7 @@ const CopyTrading = observer(() => {
 
             // Deriv config-aware endpoint
             const APP_ID = String(getAppId?.() ?? localStorage.getItem('APP_ID') ?? '117164');
-            const server = getSocketURL?.() || 'ws.derivws.com';
+            const server = (await getSocketURL().catch(() => 'ws.derivws.com')) || 'ws.derivws.com';
             const ws_url = `wss://${server}/websockets/v3?app_id=${APP_ID}`;
 
             let ws: WebSocket | null = null;
@@ -613,6 +613,19 @@ const CopyTrading = observer(() => {
             };
 
             connect();
+        };
+
+        // Provide a minimal updateClientCounts implementation if missing
+        const updateClientCounts = (manager: any) => {
+            try {
+                const tokens = manager?.copiers?.length ? manager.copiers.length : 0;
+                const master_connected = manager?.master?.status === 'connected' ? 1 : 0;
+                const total = tokens + master_connected;
+                const tokensNumEl = document.getElementById('tokens-num');
+                if (tokensNumEl) tokensNumEl.textContent = `Total Clients added: ${total}`;
+            } catch (e) {
+                // ignore
+            }
         };
 
         // Update counts periodically

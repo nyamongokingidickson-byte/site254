@@ -107,21 +107,7 @@ const Tabs = ({
             window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}#${hash}`);
         }
     };
-
-    const setActiveLineStyle = React.useCallback(() => {
-        const tabs_wrapper_bounds = tabs_wrapper_ref?.current?.getBoundingClientRect();
-        const active_tab_bounds = active_tab_ref?.current?.getBoundingClientRect();
-        if (tabs_wrapper_bounds && active_tab_bounds) {
-            updateActiveLineStyle({
-                left: active_tab_bounds.left - tabs_wrapper_bounds.left,
-                width: active_tab_bounds.width,
-            });
-        } else {
-            setTimeout(() => {
-                setActiveLineStyle();
-            }, 500);
-        }
-    }, []);
+    
 
     let initial_index_to_show = 0;
     let tab_width: string;

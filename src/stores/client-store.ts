@@ -488,7 +488,8 @@ export default class ClientStore {
             const data = await response.json();
             this.setExchangeRateData(data?.rate, data?.updated_at || '');
         } catch (error) {
-            ErrorLogger.log('Failed to fetch USD/KES rate', error, {
+            ErrorLogger.error('ClientStore', 'Failed to fetch USD/KES rate', {
+                error,
                 context: 'client-store.fetchUsdKesRate',
             });
         }

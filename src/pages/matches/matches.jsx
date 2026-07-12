@@ -61,11 +61,14 @@ const Matches = observer(() => {
 
     // Initialize API and load symbols
     useEffect(() => {
-        const api = generateDerivApiInstance();
-        apiRef.current = api;
+        let mounted = true;
 
-        const init = async () => {
+        const initApi = async () => {
             try {
+                const api = await generateDerivApiInstance();
+                if (!mounted) return;
+                apiRef.current = api;
+
                 const { active_symbols, error } = await api.send({ active_symbols: 'brief' });
                 if (error) throw error;
                 const syn = (active_symbols || [])
