@@ -26,10 +26,38 @@
         align-items: center;
         width: 100%;
 
+        &__actions {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
         &__language {
             display: flex;
             align-items: center;
             gap: 0.4rem;
+        }
+
+        &__theme-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-normal);
+            background: var(--general-main-1);
+            color: var(--text-prominent);
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+
+            svg > path,
+            path {
+                fill: var(--text-prominent);
+            }
+
+            &:hover {
+                background: var(--general-section-1);
+            }
         }
     }
 

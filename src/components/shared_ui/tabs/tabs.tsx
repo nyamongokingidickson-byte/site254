@@ -100,6 +100,54 @@ const Tabs = ({
         }
     }, []);
 
+    const [showScrollLeft, setShowScrollLeft] = React.useState(false);
+    const [showScrollRight, setShowScrollRight] = React.useState(false);
+
+    const updateScrollButtons = React.useCallback(() => {
+        const el = scroll_wrapper_ref.current as unknown as HTMLElement | null;
+        if (!el) return;
+        const can_scroll = el.scrollWidth > el.clientWidth + 1;
+        if (!can_scroll) {
+            setShowScrollLeft(false);
+            setShowScrollRight(false);
+            return;
+        }
+        setShowScrollLeft(el.scrollLeft > 0);
+        setShowScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    }, []);
+
+    React.useEffect(() => {
+        const el = scroll_wrapper_ref.current as unknown as HTMLElement | null;
+        if (!el) return;
+        // update initially
+        updateScrollButtons();
+        const onScroll = () => updateScrollButtons();
+        const onResize = () => updateScrollButtons();
+        el.addEventListener('scroll', onScroll);
+        window.addEventListener('resize', onResize);
+        return () => {
+            el.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onResize);
+        };
+    }, [updateScrollButtons]);
+
+    const scrollByAmount = (direction: 'left' | 'right') => {
+        const el = scroll_wrapper_ref.current as unknown as HTMLElement | null;
+        if (!el) return;
+        const amount = Math.round(el.clientWidth * 0.7);
+        const target = direction === 'left' ? Math.max(0, el.scrollLeft - amount) : Math.min(el.scrollWidth, el.scrollLeft + amount);
+        el.scrollTo({ left: target, behavior: 'smooth' });
+    };
+
+    // Auto-scroll when clicking tabs near the edges
+    const handleTabClick = (index: number) => {
+        onClickTabItem(index);
+        // Trigger scroll after tab is set as active
+        setTimeout(() => {
+            scrollToActiveTab('smooth');
+        }, 0);
+    };
+
     const pushHash = (hash: string) => {
         if (history) {
             history.replace(`${history.location.pathname}${window.location.search}#${hash}`);
@@ -161,6 +209,18 @@ const Tabs = ({
         setActiveLineStyle();
     };
 
+    // Check if tab is near the edges for auto-scroll
+    const isTabNearEdge = (tabElement: HTMLElement) => {
+        const scroll_el = scroll_wrapper_ref.current as unknown as HTMLElement | null;
+        if (!scroll_el) return false;
+        const tab_left = tabElement.offsetLeft;
+        const tab_right = tab_left + tabElement.offsetWidth;
+        const visible_left = scroll_el.scrollLeft;
+        const visible_right = visible_left + scroll_el.clientWidth;
+        const edge_threshold = scroll_el.clientWidth * 0.2; // 20% of visible width
+        return tab_left < visible_left + edge_threshold || tab_right > visible_right - edge_threshold;
+    };
+
     const valid_children = children.filter(child => child);
 
     if (is_scrollable) {
@@ -179,15 +239,30 @@ const Tabs = ({
             })}
         >
             <div className={classNames({ [`dc-tabs__list--header--${className}`]: className })}>
-                <ThemedScrollbars
-                    className='dc-themed-scrollbars-wrapper'
-                    is_only_horizontal
-                    is_scrollbar_hidden
-                    is_bypassed={!is_scrollable}
-                    refSetter={scroll_wrapper_ref}
-                    width='100%'
+                <div 
+                    className="dc-tabs__scroll-wrapper"
+                    style={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%',
+                        overflow: 'hidden',
+                    }}
                 >
-                    <ul
+                    <ThemedScrollbars
+                        className='dc-themed-scrollbars-wrapper'
+                        is_only_horizontal
+                        is_scrollbar_hidden
+                        is_bypassed={!is_scrollable}
+                        refSetter={scroll_wrapper_ref}
+                        width='100%'
+                        style={{
+                            overflow: 'hidden',
+                            overflowX: 'auto',
+                            overflowY: 'hidden',
+                            width: '100%',
+                        }}
+                    >
+                        <ul
                         className={classNames('dc-tabs__list', {
                             'dc-tabs__list--top': top,
                             'dc-tabs__list--border-bottom': has_bottom_line,
@@ -195,6 +270,7 @@ const Tabs = ({
                             'dc-tabs__list--center': center,
                             'dc-tabs__list--header-fit-content': header_fit_content,
                             'dc-tabs__list--full-width': is_full_width,
+                            'dc-tabs__list--scrollable': is_scrollable,
                             [`dc-tabs__list--${className}`]: className,
                             'dc-tabs__list--overflow-hidden': is_overflow_hidden,
                         })}
@@ -224,7 +300,7 @@ const Tabs = ({
                                     header_fit_content={header_fit_content}
                                     active_tab_ref={index === active_tab_index ? active_tab_ref : null}
                                     header_content={header_content}
-                                    onClick={() => onClickTabItem(index)}
+                                    onClick={() => handleTabClick(index)}
                                     setActiveLineStyle={setActiveLineStyle}
                                 />
                             );
@@ -244,7 +320,30 @@ const Tabs = ({
                             />
                         )}
                     </ul>
-                </ThemedScrollbars>
+                    </ThemedScrollbars>
+
+                    {showScrollLeft && (
+                        <button
+                            type="button"
+                            className="dc-tabs__scroll-btn dc-tabs__scroll-btn--left"
+                            aria-label="Scroll left"
+                            onClick={() => scrollByAmount('left')}
+                        >
+                            ‹
+                        </button>
+                    )}
+
+                    {showScrollRight && (
+                        <button
+                            type="button"
+                            className="dc-tabs__scroll-btn dc-tabs__scroll-btn--right"
+                            aria-label="Scroll right"
+                            onClick={() => scrollByAmount('right')}
+                        >
+                            ›
+                        </button>
+                    )}
+                </div>
             </div>
             <div
                 className={classNames('dc-tabs__content', {

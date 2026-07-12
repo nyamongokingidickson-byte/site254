@@ -68,6 +68,7 @@ const MobileMenu = ({ onLogout }: TMobileMenuProps) => {
                 <Drawer.Header onCloseDrawer={closeDrawer}>
                     {/* [AI] Conditionally render language settings in header based on brand config */}
                     <MenuHeader
+                        enableThemeToggle={enableThemeToggle}
                         hideLanguageSetting={!enableLanguageSettings || isLanguageSettingVisible}
                         openLanguageSetting={openLanguageSetting}
                     />
