@@ -106,7 +106,6 @@ const AppWrapper = observer(() => {
     const { BOT_BUILDER, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER, DTRADER } = DBOT_TABS;
     const init_render = React.useRef(true);
     const hash = [
-        'best_bots',
         'dashboard',
         'bot_builder',
         'auto_trades',
@@ -176,9 +175,9 @@ const AppWrapper = observer(() => {
     let tab_value: number | string = active_tab;
     const GetHashedValue = (tab: number) => {
         tab_value = location.hash?.split('#')[1];
-        if (!tab_value) return isMainTabVisible(tab) ? tab : DBOT_TABS.BEST_BOTS;
+        if (!tab_value) return isMainTabVisible(tab) ? tab : DBOT_TABS.DASHBOARD;
         const hash_tab_index = Number(hash.indexOf(String(tab_value)));
-        return hash_tab_index >= 0 && isMainTabVisible(hash_tab_index) ? hash_tab_index : DBOT_TABS.BEST_BOTS;
+        return hash_tab_index >= 0 && isMainTabVisible(hash_tab_index) ? hash_tab_index : DBOT_TABS.DASHBOARD;
     };
     const active_hash_tab = GetHashedValue(active_tab);
 

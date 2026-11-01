@@ -5,10 +5,24 @@ import { getDomainConfig } from '@/components/shared/utils/config/config';
 import { getToken, getLoginId } from '@/external/bot-skeleton/services/api/appId';
 import './dtrader.scss';
 
+const DTRADER_BASE_URL = 'https://deriv-dtrader.vercel.app/dtrader';
+
+/** Guest (signed-out) DTrader URL — still needs the domain app_id to load. */
+const buildGuestIframeUrl = () => {
+    const appId = getDomainConfig().appId || '114292';
+    const params = new URLSearchParams({
+        app_id: appId.toString(),
+        chart_type: 'area',
+        interval: '1t',
+        symbol: '1HZ100V',
+        trade_type: 'over_under',
+    });
+    return `${DTRADER_BASE_URL}?${params.toString()}`;
+};
+
 const Dtrader = observer(() => {
     const [iframeSrc, setIframeSrc] = useState<string>('');
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [hasError, setHasError] = useState<boolean>(false);
 
     const buildIframeUrl = useCallback((token: string, loginId: string) => {
@@ -45,9 +59,10 @@ const Dtrader = observer(() => {
         });
 
         try {
-            setIframeSrc(`https://deriv-dtrader.vercel.app/dtrader?${params.toString()}`);
-            setIsLoading(true);
-            setHasError(false);
+            const nextSrc = `${DTRADER_BASE_URL}?${params.toString()}`;
+            // Only swap the src when the URL really changed, so the 2s auth poll
+            // below cannot reload a running DTrader iframe.
+            setIframeSrc(prevSrc => (prevSrc === nextSrc ? prevSrc : nextSrc));
         } catch (error) {
             console.error('Error building iframe URL:', error);
             setHasError(true);
@@ -74,16 +89,12 @@ const Dtrader = observer(() => {
                 buildIframeUrl(token, activeLoginId);
             } else {
                 setIsAuthenticated(false);
-                setIframeSrc(
-                    'https://deriv-dtrader.vercel.app/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=over_under'
-                );
-                setIsLoading(true);
+                setIframeSrc(buildGuestIframeUrl());
                 setHasError(false);
             }
         } catch (error) {
             console.error('Error during dtrader initialization:', error);
             setHasError(true);
-            setIsLoading(false);
         }
     }, [buildIframeUrl]);
 
@@ -109,10 +120,7 @@ const Dtrader = observer(() => {
                     buildIframeUrl(token, activeLoginId);
                 } else if (isAuthenticated) {
                     setIsAuthenticated(false);
-                    setIframeSrc(
-                        'https://deriv-dtrader.vercel.app/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=over_under'
-                    );
-                    setIsLoading(true);
+                    setIframeSrc(buildGuestIframeUrl());
                     setHasError(false);
                 }
             } catch (error) {
@@ -143,12 +151,10 @@ const Dtrader = observer(() => {
     }, [isAuthenticated, buildIframeUrl]);
 
     const handleIframeLoad = useCallback(() => {
-        setIsLoading(false);
         setHasError(false);
     }, []);
 
     const handleIframeError = useCallback(() => {
-        setIsLoading(false);
         setHasError(true);
         console.error('DTrader iframe failed to load. The external site may be blocking iframe embedding.');
     }, []);
@@ -166,7 +172,6 @@ const Dtrader = observer(() => {
                         className='dtrader-error__retry'
                         onClick={() => {
                             setHasError(false);
-                            setIsLoading(true);
                         }}
                     >
                         Retry
