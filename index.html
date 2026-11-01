@@ -17,16 +17,182 @@
         <!-- End Google Tag Manager -->
 
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/deriv-logo.svg" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="title" content="Risk managers" />
-        <meta name="description" content="Web-based trading platform by Mr Duke" />
-        <meta property="og:title" content="Risk managers" />
-        <meta property="og:description" content="Web-based trading platform by Mr Duke" />
-        <title>Risk managers</title>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <meta name="title" content="Dylantrades" />
+        <meta
+            name="description"
+            content="Dylantrades is a trusted Deriv trading workspace with free bots, bot builder, charts, manual trading, and analysis tools."
+        />
+        <meta property="og:title" content="Dylantrades Trading Workspace" />
+        <meta
+            property="og:description"
+            content="Dylantrades is a trusted Deriv trading workspace with free bots, bot builder, charts, manual trading, and analysis tools."
+        />
+        <title>Dylantrades</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=Syne:wght@600;700;800&display=swap"
+            rel="stylesheet"
+        />
         <style>
             :root {
                 font-size: 62.5%;
+            }
+            /* Pre-React cover */
+            @keyframes zl-fg-breathe {
+                0%, 100% { transform: translateY(0) scale(1); }
+                50% { transform: translateY(-6px) scale(1.015); }
+            }
+            @keyframes zl-glow-pulse {
+                0%, 100% { opacity: 0.45; transform: scale(0.92); }
+                50% { opacity: 0.85; transform: scale(1.05); }
+            }
+            @keyframes zl-message-fade {
+                0%, 100% { opacity: 0.65; }
+                50% { opacity: 1; }
+            }
+            #df-boot-splash {
+                z-index: 99999;
+                background: #0b1220;
+                place-items: center;
+                font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+                display: grid;
+                position: fixed;
+                inset: 0;
+                overflow: hidden;
+            }
+            #df-boot-splash[data-done='1'] { display: none; }
+            #df-boot-splash .dhub-loader__bg {
+                object-fit: cover;
+                object-position: center;
+                filter: blur(28px) saturate(1.15) brightness(0.72);
+                pointer-events: none;
+                user-select: none;
+                width: 116%;
+                height: 116%;
+                position: absolute;
+                inset: -8%;
+                transform: scale(1.08);
+            }
+            #df-boot-splash .dhub-loader__veil {
+                pointer-events: none;
+                background: radial-gradient(circle at 50% 35%, #ffffff2e, #0000 42%),
+                    linear-gradient(#ffffffb8 0%, #f8fafce0 55%, #f1f5f9f0 100%);
+                position: absolute;
+                inset: 0;
+            }
+            #df-boot-splash .dhub-loader__stage {
+                z-index: 2;
+                text-align: center;
+                flex-direction: column;
+                align-items: center;
+                gap: 1.1rem;
+                width: min(28rem, 90vw);
+                padding: 1rem;
+                display: flex;
+                position: relative;
+            }
+            #df-boot-splash .dhub-loader__fg-wrap {
+                width: min(11.5rem, 42vw);
+                height: min(11.5rem, 42vw);
+                position: relative;
+            }
+            #df-boot-splash .dhub-loader__fg-glow {
+                pointer-events: none;
+                background: radial-gradient(circle, #22d3ee73 0%, #6366f138 42%, #0000 70%);
+                border-radius: 50%;
+                animation: 2.4s ease-in-out infinite zl-glow-pulse;
+                position: absolute;
+                inset: -18%;
+            }
+            #df-boot-splash .dhub-loader__fg {
+                z-index: 1;
+                object-fit: cover;
+                object-position: center top;
+                border-radius: 1.6rem;
+                width: 100%;
+                height: 100%;
+                animation: 3.6s ease-in-out infinite zl-fg-breathe;
+                position: relative;
+                box-shadow: 0 0 0 1px #ffffffb3, 0 18px 48px #0f172a38, 0 0 42px #22d3ee47;
+            }
+            #df-boot-splash .dhub-loader__copy {
+                flex-direction: column;
+                gap: 0.35rem;
+                display: flex;
+            }
+            #df-boot-splash .dhub-loader__brand {
+                color: #0f172a;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                font-size: max(1.15rem, min(4vw, 1.55rem));
+                font-weight: 800;
+            }
+            #df-boot-splash .dhub-loader__tagline {
+                color: #64748b;
+                letter-spacing: 0.02em;
+                margin: 0;
+                font-size: max(0.78rem, min(2.6vw, 0.92rem));
+                font-weight: 500;
+                line-height: 1.45;
+            }
+            #df-boot-splash .dhub-loader__meter {
+                width: min(16rem, 78vw);
+                margin-top: 0.35rem;
+            }
+            #df-boot-splash .dhub-loader__meter-track {
+                background: #0f172a1a;
+                border-radius: 999px;
+                height: 0.42rem;
+                position: relative;
+                overflow: visible;
+                box-shadow: inset 0 1px 2px #0f172a14;
+            }
+            #df-boot-splash .dhub-loader__meter-fill {
+                border-radius: inherit;
+                background: linear-gradient(90deg, #22d3ee, #6366f1, #a78bfa);
+                height: 100%;
+                width: 8%;
+                box-shadow: 0 0 12px #22d3ee8c, 0 0 28px #6366f159;
+            }
+            #df-boot-splash .dhub-loader__meter-bloom {
+                pointer-events: none;
+                background: #fff;
+                border-radius: 50%;
+                width: 1.1rem;
+                height: 1.1rem;
+                margin-left: -0.55rem;
+                position: absolute;
+                top: 50%;
+                left: 8%;
+                transform: translateY(-50%);
+                box-shadow: 0 0 10px 3px #22d3eee6, 0 0 24px 8px #a78bfa73;
+            }
+            #df-boot-splash .dhub-loader__meter-row {
+                justify-content: space-between;
+                align-items: center;
+                gap: 0.75rem;
+                margin-top: 0.55rem;
+                display: flex;
+            }
+            #df-boot-splash .dhub-loader__message {
+                color: #64748b;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                text-align: left;
+                font-size: 0.68rem;
+                font-weight: 600;
+                animation: 1.8s ease-in-out infinite zl-message-fade;
+            }
+            #df-boot-splash .dhub-loader__pct {
+                color: #6366f1;
+                font-variant-numeric: tabular-nums;
+                letter-spacing: 0.04em;
+                flex-shrink: 0;
+                font-size: 0.78rem;
+                font-weight: 800;
             }
         </style>
     </head>
@@ -42,6 +208,50 @@
             ></iframe
         ></noscript>
         <!-- End Google Tag Manager (noscript) -->
+
+        <div id="df-boot-splash" class="dhub-loader" aria-hidden="true">
+            <img class="dhub-loader__bg" src="/assets/bots/free-bot-markets.png" alt="" draggable="false" />
+            <div class="dhub-loader__veil"></div>
+            <div class="dhub-loader__stage">
+                <div class="dhub-loader__fg-wrap">
+                    <div class="dhub-loader__fg-glow"></div>
+                    <img class="dhub-loader__fg" src="/assets/bots/free-bot-ai.png" alt="" draggable="false" />
+                </div>
+                <div class="dhub-loader__copy">
+                    <div class="dhub-loader__brand">Dylantrades</div>
+                    <p class="dhub-loader__tagline">Where machines think faster than markets move.</p>
+                </div>
+                <div class="dhub-loader__meter">
+                    <div class="dhub-loader__meter-track">
+                        <div class="dhub-loader__meter-fill" id="df-boot-fill"></div>
+                        <div class="dhub-loader__meter-bloom" id="df-boot-bloom"></div>
+                    </div>
+                    <div class="dhub-loader__meter-row">
+                        <span class="dhub-loader__message">Awakening Dylantrades…</span>
+                        <span class="dhub-loader__pct" id="df-boot-pct">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            (function () {
+                var fill = document.getElementById('df-boot-fill');
+                var bloom = document.getElementById('df-boot-bloom');
+                var pct = document.getElementById('df-boot-pct');
+                var progress = 0;
+                var frame = 0;
+                var tick = function () {
+                    var splash = document.getElementById('df-boot-splash');
+                    if (!splash || splash.getAttribute('data-done') === '1') return;
+                    progress = Math.min(100, progress + Math.max(0.35, 0.045 * (100 - progress)));
+                    if (fill) fill.style.width = progress + '%';
+                    if (bloom) bloom.style.left = progress + '%';
+                    if (pct) pct.textContent = Math.round(progress) + '%';
+                    frame = window.requestAnimationFrame(tick);
+                };
+                frame = window.requestAnimationFrame(tick);
+            })();
+        </script>
 
         <div id="modal_root" class="modal-root"></div>
         <div id="popup_root" class="popup-root"></div>

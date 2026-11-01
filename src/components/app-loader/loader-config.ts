@@ -10,8 +10,8 @@ export const LOADER_CONFIG = {
 
     // App branding
     BRANDING: {
-        title: 'Duke Trading Academy',
-        subtitle: 'Trading Bot Platform',
+        title: 'Dylantrades',
+        subtitle: 'Where machines think faster than markets move.',
     },
 
     // Environment-specific settings

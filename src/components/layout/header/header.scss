@@ -348,10 +348,10 @@
 
     .dc-btn--primary,
     .dc-btn--primary__light {
-        background: linear-gradient(135deg, #00b8ad 0%, #00938a 100%) !important;
+        background: linear-gradient(135deg, #efbf04 0%, #d9a800 100%) !important;
         border: none !important;
         color: #ffffff !important;
-        box-shadow: 0 2px 10px rgba(0, 184, 173, 0.2);
+        box-shadow: 0 2px 10px rgba(239, 191, 4, 0.28);
 
         &:hover {
             background: linear-gradient(135deg, #00cbbe 0%, #00a49a 100%) !important;
@@ -388,9 +388,9 @@
             color: var(--rm-shell-top) !important;
 
             &:hover {
-                border-color: #00b8ad !important;
-                background: rgba(0, 184, 173, 0.08) !important;
-                color: #00938a !important;
+                border-color: #efbf04 !important;
+                background: rgba(239, 191, 4, 0.1) !important;
+                color: #b8920a !important;
             }
         }
     }

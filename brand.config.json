@@ -1,20 +1,22 @@
 {
-    "brand_name": "Profithubb",
-    "brand_domain": "riskmanagers.site",
+    "brand_name": "Dylantrades",
+    "brand_domain": "dylantrades.site",
     "brand_hostname": {
-        "staging": "riskmanagers.site",
-        "production": "riskmanagers.site"
+        "staging": "dylantrades.site",
+        "production": "dylantrades.site"
     },
-    "domain_name": "riskmanagers.site",
+    "domain_name": "dylantrades.site",
     "colors": {
-        "primary": "#3b82f6",
-        "secondary": "#64748b",
-        "tertiary": "#8b5cf6",
+        "primary": "#0f172a",
+        "secondary": "#0f172a",
+        "tertiary": "#efbf04",
         "success": "#10b981",
         "danger": "#ef4444",
-        "warning": "#f59e0b",
-        "info": "#0ea5e9",
+        "warning": "#efbf04",
+        "info": "#efbf04",
         "neutral": "#6b7280",
+        "orange": "#efbf04",
+        "red_coral": "#0f172a",
         "black": "#0f172a",
         "white": "#ffffff",
         "grey": {
@@ -32,8 +34,9 @@
     },
     "typography": {
         "font_family": {
-            "primary": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-            "secondary": "Georgia, 'Times New Roman', Times, serif",
+            "primary": "Outfit, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+            "secondary": "Sora, 'Syne', Georgia, 'Times New Roman', Times, serif",
+            "display": "Syne, Sora, 'Segoe UI', sans-serif",
             "monospace": "'Courier New', Courier, monospace"
         },
         "font_sizes": {
@@ -58,14 +61,14 @@
         "css_variable_prefix": "--brand"
     },
     "platform": {
-        "name": "Trading Bot",
+        "name": "Dylantrades",
         "logo": {
             "type": "component",
             "component_name": "BrandLogo",
-            "alt_text": "Trading Bot",
+            "alt_text": "Dylantrades",
             "link_url": "/",
-            "show_text": false,
-            "text": "Trading Bot"
+            "show_text": true,
+            "text": "Dylantrades"
         },
         "footer": {
             "enable_language_settings": false,
@@ -73,10 +76,10 @@
         },
         "hostname": {
             "production": {
-                "com": "riskmanagers.site"
+                "com": "dylantrades.site"
             },
             "staging": {
-                "com": "riskmanagers.site"
+                "com": "dylantrades.site"
             }
         },
         "auth2_url": {

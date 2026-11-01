@@ -4,7 +4,7 @@ import { buildBestBotsFileUrl, generateOAuthURL, getDomainConfigForHost } from '
 describe('DOMAIN_CONFIG', () => {
     it('returns the configured TermicaFX auth and bot folder settings', () => {
         expect(getDomainConfigForHost('termicafx.site')).toMatchObject({
-            clientId: '33h4ThjleZotVMiKQ1gE7',
+            clientId: '34J0u7zObmeCX5lnl8zm7',
             appId: '124217',
             redirectUri: 'https://termicafx.site/',
             botsFolder: 'optimumtraders.site',
@@ -35,10 +35,10 @@ describe('DOMAIN_CONFIG', () => {
     });
 
     it.each([
-        ['mrzetuzetu.site', '33gJ6p5dXzASAIobgv9az', '80364', 'Mrzetuzetu'],
-        ['masterhunter.site', '33g5WCS5YOFHD3aWLZZjj', '96223', 'Master Hunter'],
-        ['tradinghubs.site', '33hi7ev9NiDjWY640JuSw', '122208', 'Trading Hubs'],
-        ['mafiahub.site', '331bCUS8izRudblAnSACt', '120589', 'Mafia Hub'],
+        ['mrzetuzetu.site', '34J0u7zObmeCX5lnl8zm7', '80364', 'Mrzetuzetu'],
+        ['masterhunter.site', '34J0u7zObmeCX5lnl8zm7', '96223', 'Master Hunter'],
+        ['tradinghubs.site', '34J0u7zObmeCX5lnl8zm7', '122208', 'Trading Hubs'],
+        ['mafiahub.site', '34J0u7zObmeCX5lnl8zm7', '120589', 'Mafia Hub'],
     ])('returns auth and bot folder settings for %s', (domain, clientId, appId, brandName) => {
         expect(getDomainConfigForHost(domain)).toMatchObject({
             clientId,
@@ -83,10 +83,10 @@ describe('DOMAIN_CONFIG', () => {
     });
 
     it.each([
-        ['mrzetuzetu.site', '80364', '33gJ6p5dXzASAIobgv9az'],
-        ['masterhunter.site', '96223', '33g5WCS5YOFHD3aWLZZjj'],
-        ['tradinghubs.site', '122208', '33hi7ev9NiDjWY640JuSw'],
-        ['mafiahub.site', '120589', '331bCUS8izRudblAnSACt'],
+        ['mrzetuzetu.site', '80364', '34J0u7zObmeCX5lnl8zm7'],
+        ['masterhunter.site', '96223', '34J0u7zObmeCX5lnl8zm7'],
+        ['tradinghubs.site', '122208', '34J0u7zObmeCX5lnl8zm7'],
+        ['mafiahub.site', '120589', '34J0u7zObmeCX5lnl8zm7'],
     ])('uses the working OAuth2 PKCE login wiring for %s', async (host, appId, clientId) => {
         const originalAppEnv = process.env.APP_ENV;
         const cryptoMock = {
@@ -146,7 +146,7 @@ describe('DOMAIN_CONFIG', () => {
         const url = new URL(oauthUrl);
 
         expect(url.origin + url.pathname).toBe('https://auth.deriv.com/oauth2/auth');
-        expect(url.searchParams.get('client_id')).toBe('33cCr2bWsByPgLlormNFw');
+        expect(url.searchParams.get('client_id')).toBe('34J0u7zObmeCX5lnl8zm7');
         expect(url.searchParams.get('app_id')).toBe('71937');
         expect(url.searchParams.get('redirect_uri')).toBe('https://riskmanagers.site/');
         expect(url.searchParams.get('response_type')).toBe('code');
@@ -159,7 +159,7 @@ describe('DOMAIN_CONFIG', () => {
         const enifihubConfig = getDomainConfigForHost('enifihub.vercel.app');
 
         expect(enifihubConfig).toMatchObject({
-            clientId: '33E4RZUuQNAdTIRfsPZRE',
+            clientId: '34J0u7zObmeCX5lnl8zm7',
             appId: '113555',
             redirectUri: 'https://enifihub.vercel.app/',
             botsFolder: 'enifihub.vercel.app',
