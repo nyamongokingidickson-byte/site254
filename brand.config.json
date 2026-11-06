@@ -1,5 +1,5 @@
 {
-    "brand_name": "Dylantrades",
+    "brand_name": "Dylan Trades",
     "brand_domain": "dylantrades.site",
     "brand_hostname": {
         "staging": "dylantrades.site",
@@ -51,9 +51,30 @@
         }
     },
     "color_variants": {
-        "light_variants": [100, 200, 300, 400, 500],
-        "dark_variants": [600, 700, 800, 900],
-        "opacity_variants": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+        "light_variants": [
+            100,
+            200,
+            300,
+            400,
+            500
+        ],
+        "dark_variants": [
+            600,
+            700,
+            800,
+            900
+        ],
+        "opacity_variants": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90
+        ]
     },
     "theme_config": {
         "enable_dynamic_themes": true,
@@ -61,14 +82,14 @@
         "css_variable_prefix": "--brand"
     },
     "platform": {
-        "name": "Dylantrades",
+        "name": "Dylan Trades",
         "logo": {
             "type": "component",
             "component_name": "BrandLogo",
-            "alt_text": "Dylantrades",
+            "alt_text": "Dylan Trades",
             "link_url": "/",
             "show_text": true,
-            "text": "Dylantrades"
+            "text": "Dylan Trades"
         },
         "footer": {
             "enable_language_settings": false,
