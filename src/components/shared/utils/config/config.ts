@@ -106,7 +106,7 @@ const DEFAULT_MARTINGALE_CONFIG: MartingaleConfig = {
 };
 
 const DEFAULT_DOMAIN_UI: DomainUIConfig = {
-    brandName: 'Dylantrades',
+    brandName: 'Dylan Trades',
     primaryColor: '#0f172a',
     secondaryColor: '#0f172a',
     accentColor: '#efbf04',
@@ -289,7 +289,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
         primaryDomain: 'dylantrades.site',
         aliases: ['www.dylantrades.site'],
         clientId: '34J0u7zObmeCX5lnl8zm7',
-        appId: '71937',
+        appId: '33PLfnjMyMbKKpZXU9XJb',
         redirectUri: 'https://dylantrades.site/',
         botsFolder: 'riskmanagers.site',
         includeLegacyAppIdInOAuth: true,
@@ -298,7 +298,7 @@ export const DOMAIN_CONFIG: Record<string, DomainConfig> = {
             manualTrading: true,
         },
         ui: {
-            brandName: 'Dylantrades',
+            brandName: 'Dylan Trades',
         },
     }),
 };
